@@ -9,7 +9,8 @@ import glob
 import datetime
 import pandas as pd
 from multiprocessing import Pool
-from utils.dutchdata import pos_topic_words, pos_opinion_words, word_types
+from utils.dutchdata import pos_topic_words, pos_opinion_words, word_types, \
+    known_parties
 from utils.inputgeneration import Perspective
 
 
@@ -27,10 +28,6 @@ def extract_words(data_file, nFile, nFiles, coalitions, cabinets):
     speech_tag = '{http://www.politicalmashup.nl}speech'
     party_tag = '{http://www.politicalmashup.nl}party'
     date_tag = '{http://purl.org/dc/elements/1.1/}date'
-
-    known_parties = ['CDA', 'D66', 'GPV', 'GroenLinks', 'OSF', 'PvdA', 'RPF',
-                     'SGP', 'SP', 'VVD', '50PLUS', 'AVP', 'ChristenUnie',
-                     'Leefbaar Nederland', 'LPF', 'PvdD', 'PVV']
 
     f = gzip.open(data_file)
     context = etree.iterparse(f, events=('end',), tag=(speech_tag, date_tag),

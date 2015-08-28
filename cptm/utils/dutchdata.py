@@ -1,4 +1,7 @@
 """Utils for the Dutch parliamentary data."""
+known_parties = ['CDA', 'D66', 'GPV', 'GroenLinks', 'OSF', 'PvdA', 'RPF',
+                 'SGP', 'SP', 'VVD', '50PLUS', 'AVP', 'ChristenUnie',
+                 'Leefbaar Nederland', 'LPF', 'PvdD', 'PVV']
 
 
 def pos_topic_words():
