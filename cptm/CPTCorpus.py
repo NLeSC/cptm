@@ -76,6 +76,7 @@ class CPTCorpus():
             self._create_corpus_wide_dictionaries()
 
         self.testSplit = testSplit
+        self.nPerspectives = len(self.perspectives)
 
     def __str__(self):
         perspectives = [str(p) for p in self.perspectives]
