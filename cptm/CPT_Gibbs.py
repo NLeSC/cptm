@@ -18,7 +18,6 @@ import logging
 import time
 import pandas as pd
 import os
-from scipy.stats import entropy
 
 from gibbs_inner import gibbs_inner
 
@@ -464,79 +463,6 @@ class GibbsSampler():
         df = pd.DataFrame(phi, columns=words)
         df = df.transpose()
         return df
-
-    def contrastive_opinions(self, query):
-        """Returns a DataFrame containing contrastive opinions for the query.
-
-        Implements contrastive opinion modeling as specified in [Fang et al.,
-        2012] equation 1. The resulting probability distributions over words
-        are normalized, in order to facilitate mutual comparisons.
-
-        Example usage:
-            co = sampler.contrastive_opinions('mishandeling')
-            print sampler.print_topic(co[0])
-
-        Parameters:
-            query : str
-            The word contrastive opinions should be calculated for.
-
-        Returns:
-            pandas DataFrame
-            The index of the DataFrame contains the topic words and the columns
-            represent the perspectives.
-        """
-        logger.debug('calculating contrastive opinions')
-
-        # TODO: allow the user to specify index or range of the parameters to use
-        phi_topic = self.load_parameters(self.PHI_TOPIC, index=self.nIter-1)
-
-        self.nks = np.load(self.get_nks_file_name())
-
-        # TODO: fix case when word not in topicDictionary
-        query_word_id = self.corpus.topicDictionary.token2id[query]
-
-        words = self.corpus.opinion_words()
-        result = pd.DataFrame(np.zeros((self.VO, self.nPerspectives)), words)
-
-        for p in range(self.nPerspectives):
-            phi_opinion = self.load_parameters(self.PHI_OPINION.format(p),
-                                               index=self.nIter-1)
-
-            c_opinion = phi_opinion.transpose() * phi_topic[:, query_word_id] * self.nks[-1]
-            c_opinion = np.sum(c_opinion, axis=1)
-            c_opinion /= np.sum(c_opinion)
-
-            result[p] = pd.Series(c_opinion, index=words)
-
-        return result
-
-    def jsd_opinions(self, co):
-        """Calculate Jensen-Shannon divergence between contrastive opinions.
-
-        Implements Jensen-Shannon divergence between contrastive opinions as
-        described in [Fang et al., 2012] section 3.2.
-
-        Example usage:
-            co = sampler.contrastive_opinions('mishandeling')
-            jsd =  sampler.jsd_opinions(co.values)
-
-        Parameter:
-            co : numpy ndarray
-            A numpy ndarray containing contrastive opinions (see
-            self.contrastive_opinions(query))
-
-        Returns:
-            float
-            The Jensen-Shannon divergence between the contrastive opinions.
-
-        """
-        logger.debug('calculate Jensen-Shannon divergence between contrastive '
-                     'opinions')
-        result = np.zeros(self.nPerspectives, dtype=np.float)
-        p_avg = np.mean(co, axis=1)
-        for persp in range(self.nPerspectives):
-            result[persp] = entropy(co[:, persp], p_avg)
-        return np.mean(result)
 
     def __str__(self):
         return 'CPT GibbsSampler: {} perspectives, {} topics,  {} ' \
