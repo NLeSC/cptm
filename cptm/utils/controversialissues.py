@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 from scipy.stats import entropy
 import logging
+from itertools import combinations
+from cptm.utils.experiment import opinionFileName
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(time)s : %(levelname)s : %(message)s',
@@ -79,3 +81,29 @@ def jsd_opinions(co):
     for persp in range(nPerspectives):
         result[persp] = entropy(co[:, persp], p_avg)
     return np.mean(result)
+
+
+def perspective_jsd_matrix(params, nTopics, perspectives):
+    """Return the perspective jsd matrix.
+
+    Returns:
+
+    """
+    logger.debug('calculate matrix containing pairwise JSD between '
+                 'perspectives')
+    nP = len(perspectives)
+    perspective_jsd_matrix = np.zeros((nTopics, nP, nP), np.float)
+
+    for persp1, persp2 in combinations(perspectives, 2):
+        opinions1 = pd.read_csv(opinionFileName(params, persp1))
+        opinions2 = pd.read_csv(opinionFileName(params, persp2))
+
+        for t in range(nTopics):
+            co = np.column_stack((opinions1[str(t)].values,
+                                  opinions2[str(t)].values))
+            index1 = perspectives.index(persp1)
+            index2 = perspectives.index(persp2)
+            jsd = jsd_opinions(co)
+            perspective_jsd_matrix[t, index1, index2] = jsd
+
+    return perspective_jsd_matrix
