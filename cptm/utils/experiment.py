@@ -3,6 +3,8 @@ import logging
 import json
 import glob
 import os
+import re
+import pandas as pd
 
 from cptm import CPTCorpus
 from cptm import GibbsSampler
@@ -93,6 +95,22 @@ def get_sampler(params, corpus, nTopics=None, initialize=True):
                            out_dir=out_dir.format(nTopics),
                            initialize=initialize)
     return sampler
+
+
+def load_topics(params):
+    return pd.read_csv(topicFileName(params), index_col=0, encoding='utf-8')
+
+
+def load_opinions(params):
+    nTopics = params.get('nTopics')
+    outDir = params.get('outDir')
+    opinion_files = glob.glob('{}/opinions_*_{}.csv'.format(outDir, nTopics))
+    opinions = {}
+    for f in opinion_files:
+        m = re.match(r'.+opinions_(.+).csv', f)
+        name = m.group(1).replace('_{}'.format(nTopics), '')
+        opinions[name] = pd.read_csv(f, index_col=0, encoding='utf-8')
+    return opinions
 
 
 def thetaFileName(params):
