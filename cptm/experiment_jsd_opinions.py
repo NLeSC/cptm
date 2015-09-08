@@ -3,8 +3,8 @@ import argparse
 import pandas as pd
 import numpy as np
 
-from utils.experiment import load_config, get_corpus, get_sampler
-
+from utils.experiment import load_config, get_corpus, load_opinions
+from utils.controversialissues import jsd_opinions
 
 logging.basicConfig(format='%(levelname)s : %(message)s', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -18,25 +18,20 @@ config = load_config(args.json)
 corpus = get_corpus(config)
 
 nTopics = config.get('nTopics')
-sampler = get_sampler(config, corpus, nTopics, initialize=False)
 
 logger.info('loading opinions')
-outDir = config.get('outDir').format('')
-phi_opinion = []
-for p in sampler.corpus.perspectives:
-    f = '{}/opinions_{}_{}.csv'.format(outDir, p.name, nTopics)
-    phi_opinion.append(pd.read_csv(f, index_col=0, encoding='utf-8'))
+opinions = load_opinions(config)
 
 logger.info('calculating jsd')
 # combine opinions from different perspectives and calculate jsd
-co = np.zeros((sampler.VO, sampler.nPerspectives))
+co = np.zeros((len(corpus.opinionDict), corpus.nPerspectives))
 jsd = np.zeros(nTopics)
 for t in range(nTopics):
-    for i in range(len(phi_opinion)):
-        co[:, i] = phi_opinion[i][str(t)].values
-    jsd[t] = sampler.jsd_opinions(co)
+    for i in range(len(opinions)):
+        co[:, i] = opinions[i][str(t)].values
+    jsd[t] = jsd_opinions(co)
 
-fName = '{}/jsd_{}.csv'.format(outDir, nTopics)
+fName = '{}/jsd_{}.csv'.format(config.get('outDir').format(''), nTopics)
 logger.info('saving {} to disk'.format(fName))
 df = pd.DataFrame({'jsd': jsd})
 df.to_csv(fName)
