@@ -1,5 +1,6 @@
 import logging
 import argparse
+import numpy as np
 
 from utils.experiment import load_config, get_corpus
 from utils.controversialissues import perspective_jsd_matrix
@@ -22,3 +23,5 @@ perspective_jsd = perspective_jsd_matrix(config, nTopics, perspectives)
 
 print perspective_jsd
 print perspective_jsd.sum(axis=(2, 1))
+
+np.save(config.get('outDir').format('perspective_jsd.npy'), perspective_jsd)
