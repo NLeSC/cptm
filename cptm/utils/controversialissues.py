@@ -87,7 +87,10 @@ def perspective_jsd_matrix(params, nTopics, perspectives):
     """Return the perspective jsd matrix.
 
     Returns:
-
+        nTopics x #perspectives x #perspectives matrix containing pairwise
+        jsd between perspectives for each topic. The #perspectives x
+        #perspectives matrix for each topic is symmetric. The diagonal contains
+        zeros.
     """
     logger.debug('calculate matrix containing pairwise JSD between '
                  'perspectives')
@@ -105,5 +108,6 @@ def perspective_jsd_matrix(params, nTopics, perspectives):
             index2 = perspectives.index(persp2)
             jsd = jsd_opinions(co)
             perspective_jsd_matrix[t, index1, index2] = jsd
+            perspective_jsd_matrix[t, index2, index1] = jsd
 
     return perspective_jsd_matrix

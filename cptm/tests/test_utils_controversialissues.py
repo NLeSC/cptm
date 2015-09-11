@@ -1,9 +1,10 @@
-from nose.tools import assert_equal
+from nose.tools import assert_equal, assert_true
 from numpy.testing import assert_almost_equal
 from numpy import load
 from pandas import DataFrame, read_csv
 
-from cptm.utils.controversialissues import jsd_opinions, contrastive_opinions
+from cptm.utils.controversialissues import jsd_opinions, \
+    contrastive_opinions, perspective_jsd_matrix
 
 
 def test_jensen_shannon_divergence_self():
@@ -56,3 +57,26 @@ def test_contrastive_opinions_prob_distr():
 
     for v in s:
         yield assert_almost_equal, v, 1.0
+
+
+def test_perspective_jsd_matrix_symmetric():
+    nTopics = 20
+    params = {'nTopics': nTopics, 'outDir': 'cptm/tests/data/{}'}
+    perspectives = ['p0', 'p1']
+    jsd_matrix = perspective_jsd_matrix(params, nTopics, perspectives)
+
+    for i in range(nTopics):
+        jsd = jsd_matrix[i]
+        yield assert_true, (jsd.transpose() == jsd).all()
+
+
+def test_perspective_jsd_matrix_diagonal_zeros():
+    nTopics = 20
+    params = {'nTopics': nTopics, 'outDir': 'cptm/tests/data/{}'}
+    perspectives = ['p0', 'p1']
+    jsd_matrix = perspective_jsd_matrix(params, nTopics, perspectives)
+
+    for i in range(nTopics):
+        jsd = jsd_matrix[i]
+        for idx in range(jsd.shape[0]):
+            yield assert_equal, jsd[idx, idx], 0.0
