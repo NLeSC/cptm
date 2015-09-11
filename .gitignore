@@ -6,3 +6,4 @@ build/*
 gibbs_inner.*
 !gibbs_inner.pyx
 .ipynb_checkpoints
+*.egg-info
