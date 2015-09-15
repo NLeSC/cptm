@@ -50,8 +50,10 @@ def extract_words(data_file, nFile, nFiles, coalitions, cabinets):
 
     # Cabinets
     # And government vs. opposition divided into cabinets
+    # And parties divided into cabinets
     ca_data = {}
     ca_go_data = {}
+    ca_parties_data = {}
     for ca in cabinets.tolist():
         ca_data[ca] = Perspective(ca, tWords, oWords)
         ca_go_data[ca] = {}
@@ -59,6 +61,10 @@ def extract_words(data_file, nFile, nFiles, coalitions, cabinets):
                                           oWords)
         ca_go_data[ca]['o'] = Perspective('{}-Opposition'.format(ca), tWords,
                                           oWords)
+        ca_parties_data[ca] = {}
+        for party in known_parties:
+            ca_parties_data[ca][party] = Perspective('{}-{}'.format(ca, party),
+                                                     tWords, oWords)
 
     for event, elem in context:
         if elem.tag == date_tag:
@@ -112,12 +118,13 @@ def extract_words(data_file, nFile, nFiles, coalitions, cabinets):
                         go_data[go_perspective].add(pos, l)
                         ca_data[ca].add(pos, l)
                         ca_go_data[ca][go_perspective].add(pos, l)
+                        ca_parties_data[ca][party].add(pos, l)
             else:
                 num_speech_without_party += 1
     del context
     f.close()
 
-    return data, go_data, ca_data, ca_go_data
+    return data, go_data, ca_data, ca_go_data, ca_parties_data
 
 
 def write_data(data, name, data_file):
@@ -131,14 +138,15 @@ def write_data(data, name, data_file):
 
 
 def process_file(data_file, nFile, nFiles, coalitions, cabinets):
-    data, go_data, ca_data, ca_go_data = extract_words(data_file, nFile,
-                                                       nFiles, coalitions,
-                                                       cabinets)
+    data, go_data, ca_data, ca_go_data, ca_parties_data = extract_words(
+        data_file, nFile, nFiles, coalitions, cabinets)
     write_data(data, 'parties', data_file)
     write_data(go_data, 'gov_opp', data_file)
     write_data(ca_data, 'cabinets', data_file)
     for c in ca_go_data:
         write_data(ca_go_data[c], 'cabinets-gov_opp', data_file)
+    for c in ca_parties_data:
+        write_data(ca_parties_data[c], 'cabinets-parties', data_file)
 
 
 if __name__ == '__main__':
