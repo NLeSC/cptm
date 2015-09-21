@@ -26,8 +26,8 @@ def contrastive_opinions(query, topics, opinions, nks):
             The word contrastive opinions should be calculated for.
         topics : pandas DataFrame
             DataFrame containg the topics
-        opinions : list of pandas DataFrames
-            List containing a pandas DataFrame for every perspective
+        opinions : dict of pandas DataFrames
+            Dictionary containing a pandas DataFrame for every perspective
         nks : numpy ndarray
             numpy array containing nks counts
 
@@ -39,21 +39,18 @@ def contrastive_opinions(query, topics, opinions, nks):
     # TODO: fix case when word not in topicDictionary
     logger.debug('calculating contrastive opinions')
 
-    nPerspectives = len(opinions)
-    opinion_words = list(opinions[0].index)
+    opinion_words = list(opinions[opinions.keys()[0]].index)
 
-    result = pd.DataFrame(np.zeros((len(opinion_words), nPerspectives)),
-                          opinion_words)
+    result = []
 
-    for p, opinion in enumerate(opinions):
-        print opinion.shape
+    for p, opinion in opinions.iteritems():
         c_opinion = opinion * topics.loc[query] * nks[-1]
         c_opinion = np.sum(c_opinion, axis=1)
         c_opinion /= np.sum(c_opinion)
 
-        result[p] = pd.Series(c_opinion, index=opinion_words)
+        result.append(pd.Series(c_opinion, index=opinion_words, name=p))
 
-    return result
+    return pd.concat(result, axis=1, keys=[s.name for s in result])
 
 
 def jsd_opinions(co):
@@ -111,3 +108,16 @@ def perspective_jsd_matrix(params, nTopics, perspectives):
             perspective_jsd_matrix[t, index2, index1] = jsd
 
     return perspective_jsd_matrix
+
+
+def clustered_jsd(jsd, perspectives, clusters):
+    result = []
+    for cluster, persps in clusters.iteritems():
+        dist = 0.0
+        for p1, p2 in combinations(persps, 2):
+            p1_idx = perspectives.index(p1)
+            p2_idx = perspectives.index(p2)
+            dist += jsd[p1_idx, p2_idx]
+        result.append(dist)
+    return np.array(result)
+

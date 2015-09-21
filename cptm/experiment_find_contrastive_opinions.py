@@ -1,39 +1,49 @@
 import logging
 import pandas as pd
+import argparse
 
-from CPTCorpus import CPTCorpus
-from CPT_Gibbs import GibbsSampler
+from cptm.utils.experiment import load_config, get_corpus, get_sampler, \
+    load_topics, load_opinions, load_nks
+from cptm.utils.controversialissues import contrastive_opinions, jsd_opinions
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(levelname)s : %(message)s', level=logging.INFO)
 
-# load corpus
-data_dir = '/home/jvdzwaan/data/tmp/generated/test_exp/'
-corpus = CPTCorpus.load('{}corpus.json'.format(data_dir))
-#corpus = CPTCorpus.load('{}corpus.json'.format(data_dir),
-#                        topicDict='{}/topicDict.dict'.format(data_dir),
-#                        opinionDict='{}/opinionDict.dict'.format(data_dir))
+logging.getLogger('gensim').setLevel(logging.ERROR)
+logging.getLogger('CPTCorpus').setLevel(logging.ERROR)
+logging.getLogger('CPT_Gibbs').setLevel(logging.ERROR)
 
-nIter = 200
-beta = 0.02
-nTopics = 100
-out_dir = '/home/jvdzwaan/data/tmp/generated/test_exp/{}'
+parser = argparse.ArgumentParser()
+parser.add_argument('json', help='json file containing experiment '
+                    'configuration.')
+args = parser.parse_args()
 
-sampler = GibbsSampler(corpus, nTopics=nTopics, nIter=nIter,
-                       alpha=(50.0/nTopics), beta=beta, beta_o=beta,
-                       out_dir=out_dir.format(nTopics))
-sampler._initialize()
+config = load_config(args.json)
+corpus = get_corpus(config)
+
+sampler = get_sampler(config, corpus, nTopics=None, initialize=False)
 
 words = corpus.topic_words()
+topics = load_topics(config)
+opinions = load_opinions(config)
+print opinions
+nks = load_nks(config)
+print nks
 
 results = pd.DataFrame(index=words, columns=['jsd'])
 
-for word in words:
-    co = sampler.contrastive_opinions(word)
-    jsd = sampler.jsd_opinions(co)
+for idx, word in enumerate(words):
+    co = contrastive_opinions(word, topics, opinions, nks)
+    print co
+    jsd = jsd_opinions(co.values)
     results.set_value(word, 'jsd', jsd)
 
-results.to_csv(out_dir.format('jsd.csv'))
+    if idx % 1000 == 0:
+        logger.info('jsd for {}: {} (word {} of {})'.format(word, jsd, idx+1,
+                                                            len(words)))
+
+fName = 'co_words_{}.csv'.format(config.get('nTopics'))
+results.to_csv(config.get('outDir').format(fName))
 
 print 'top 20 words with most contrastive opinions'
 top = pd.Series(results['jsd'])

@@ -1,10 +1,11 @@
 """Functions for experiments."""
 import logging
 import json
-import glob
+from glob import glob
 import os
 import re
 import pandas as pd
+import numpy as np
 
 from cptm import CPTCorpus
 from cptm import GibbsSampler
@@ -53,7 +54,7 @@ def add_parameter(name, value, fName):
 
 def get_corpus(params):
     out_dir = params.get('outDir')
-    files = glob.glob(params.get('inputData'))
+    files = glob(params.get('inputData'))
 
     if not os.path.isfile(out_dir.format('corpus.json')):
         corpus = CPTCorpus(files,
@@ -104,13 +105,18 @@ def load_topics(params):
 def load_opinions(params):
     nTopics = params.get('nTopics')
     outDir = params.get('outDir')
-    opinion_files = glob.glob('{}/opinions_*_{}.csv'.format(outDir, nTopics))
+    opinion_files = glob(outDir.format('/opinions_*_{}.csv'.format(nTopics)))
+    print opinion_files
     opinions = {}
     for f in opinion_files:
         m = re.match(r'.+opinions_(.+).csv', f)
         name = m.group(1).replace('_{}'.format(nTopics), '')
         opinions[name] = pd.read_csv(f, index_col=0, encoding='utf-8')
     return opinions
+
+
+def load_nks(params):
+    return np.load(nksFileName(params))
 
 
 def thetaFileName(params):
@@ -129,6 +135,13 @@ def opinionFileName(params, name):
     nTopics = params.get('nTopics')
     return os.path.join(params.get('outDir').format(''),
                         'opinions_{}_{}.csv'.format(name, nTopics))
+
+
+def nksFileName(params):
+    # TODO: fix code duplication in sampler
+    nTopics = params.get('nTopics')
+    outDir = params.get('outDir').format(nTopics)
+    return os.path.join(outDir, 'parameter_samples/nks.npy')
 
 
 def experimentName(params):

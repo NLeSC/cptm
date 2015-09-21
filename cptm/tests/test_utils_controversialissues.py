@@ -3,6 +3,7 @@ from numpy.testing import assert_almost_equal
 from numpy import load
 from pandas import DataFrame, read_csv
 
+from cptm.utils.experiment import load_topics, load_opinions
 from cptm.utils.controversialissues import jsd_opinions, \
     contrastive_opinions, perspective_jsd_matrix
 
@@ -37,19 +38,28 @@ def test_jensen_shannon_divergence_known_value():
 
 def test_contrastive_opinions_result_shape():
     """Verify the shape of the output of contrastive_opinions"""
-    topics = read_csv('cptm/tests/data/topics_20.csv', index_col=0)
-    opinions = [read_csv('cptm/tests/data/opinions_p0_20.csv', index_col=0),
-                read_csv('cptm/tests/data/opinions_p1_20.csv', index_col=0)]
+    params = {
+        "inputData": "/home/jvdzwaan/data/tmp/test/*",
+        "outDir": "cptm/tests/data/{}",
+        "nTopics": 20
+    }
+    topics = load_topics(params)
+    opinions = load_opinions(params)
     nks = load('cptm/tests/data/nks_20.npy')
     co = contrastive_opinions('carrot', topics, opinions, nks)
-    assert_equal(co.shape, (len(opinions[0].index), len(opinions)))
+    num_opinion_words = len(opinions[opinions.keys()[0]].index)
+    assert_equal(co.shape, (num_opinion_words, len(opinions)))
 
 
 def test_contrastive_opinions_prob_distr():
     """Verify that the sum of all columns == 1.0 (probability distribution)"""
-    topics = read_csv('cptm/tests/data/topics_20.csv', index_col=0)
-    opinions = [read_csv('cptm/tests/data/opinions_p0_20.csv', index_col=0),
-                read_csv('cptm/tests/data/opinions_p1_20.csv', index_col=0)]
+    params = {
+        "inputData": "/home/jvdzwaan/data/tmp/test/*",
+        "outDir": "cptm/tests/data/{}",
+        "nTopics": 20
+    }
+    topics = load_topics(params)
+    opinions = load_opinions(params)
     nks = load('cptm/tests/data/nks_20.npy')
     co = contrastive_opinions('carrot', topics, opinions, nks)
 
