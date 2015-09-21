@@ -48,7 +48,7 @@ def topic_str(df, single_line=False, weights=False):
                 lines.append('{}:\t'.format(l)+' '.join(df[l]))
         else:
             for l in opinion_labels:
-                zipped = zip(df[l], df['weigths_{}'.format(l)])
+                zipped = zip(df[l], df['weights_{}'.format(l)])
                 line = ['{}*{:.4f}'.format(wo, we) for wo, we in zipped]
                 lines.append(' '.join(['{}:\t'.format(l)]+line))
         return '\n'.join(lines)
