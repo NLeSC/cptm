@@ -21,14 +21,15 @@ nTopics = config.get('nTopics')
 
 logger.info('loading opinions')
 opinions = load_opinions(config)
+print opinions
 
 logger.info('calculating jsd')
 # combine opinions from different perspectives and calculate jsd
 co = np.zeros((len(corpus.opinionDictionary), corpus.nPerspectives))
 jsd = np.zeros(nTopics)
 for t in range(nTopics):
-    for i in range(len(opinions)):
-        co[:, i] = opinions[i][str(t)].values
+    for i, persp in enumerate(opinions.keys()):
+        co[:, i] = opinions[persp][str(t)].values
     jsd[t] = jsd_opinions(co)
 
 fName = '{}/jsd_{}.csv'.format(config.get('outDir').format(''), nTopics)
