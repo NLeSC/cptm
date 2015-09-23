@@ -9,6 +9,6 @@ before_install:
 # command to install dependencies
 install: 
     - travis_wait pip install -r requirements.txt
-    - python setup.py -q install 
+    - python setup.py -q install build_ext 
 # command to run tests
 script: nosetests
