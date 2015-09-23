@@ -1,11 +1,12 @@
 from nose.tools import assert_equal, assert_true
 from numpy.testing import assert_almost_equal
 from numpy import load
-from pandas import DataFrame, read_csv
+from pandas import DataFrame
+from itertools import combinations, chain
 
 from cptm.utils.experiment import load_topics, load_opinions
 from cptm.utils.controversialissues import jsd_opinions, \
-    contrastive_opinions, perspective_jsd_matrix
+    contrastive_opinions, perspective_jsd_matrix, filter_opinions
 
 
 def test_jensen_shannon_divergence_self():
@@ -90,3 +91,18 @@ def test_perspective_jsd_matrix_diagonal_zeros():
         jsd = jsd_matrix[i]
         for idx in range(jsd.shape[0]):
             yield assert_equal, jsd[idx, idx], 0.0
+
+
+def test_filter_opinions():
+    params = {
+        "inputData": "/home/jvdzwaan/data/tmp/test/*",
+        "outDir": "cptm/tests/data/{}",
+        "nTopics": 20
+    }
+    opinions = load_opinions(params)
+    for perspectives in chain(combinations(opinions.keys(), 1),
+                              [[], ['p0', 'p1']]):
+        filtered = filter_opinions(perspectives, opinions)
+
+        for p in perspectives:
+            yield assert_true, p in filtered.keys()

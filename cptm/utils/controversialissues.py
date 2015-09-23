@@ -10,6 +10,25 @@ logging.basicConfig(format='%(time)s : %(levelname)s : %(message)s',
                     level=logging.INFO)
 
 
+def filter_opinions(perspectives, opinions):
+    """Return opinions for selected perspectives
+
+    Parameters:
+        perspectives : list of strings
+            list of strings containing names of perspectives to return opinions
+            for
+        opinions : dict of opinions (pandas DataFrames)
+
+    Returns:
+        dict of opinions (pandas DataFrames)
+            Dictionary containing opinions for the selected perspectives
+    """
+    filtered = {}
+    for persp in perspectives:
+        filtered[persp] = opinions[persp].copy()
+    return filtered
+
+
 def contrastive_opinions(query, topics, opinions, nks):
     """Returns a DataFrame containing contrastive opinions for the query.
 
@@ -78,6 +97,30 @@ def jsd_opinions(co):
     for persp in range(nPerspectives):
         result[persp] = entropy(co[:, persp], p_avg)
     return np.mean(result)
+
+
+def jsd_for_all_topics(opinions):
+    """Calculate opinion jsd for all topics
+
+    Parameters:
+        opinions : dictionary of opinions (pandas DataFrames)
+
+    Returns:
+        jsd : numpy array
+        A numpy array containing jsd for all topics
+    """
+    perspectives = opinions.keys()
+    nTopics = len(opinions[perspectives[0]].columns)
+
+    co = np.zeros((len(opinions[opinions.keys()[0]]), len(perspectives)))
+    jsd = np.zeros(nTopics)
+
+    for t in range(nTopics):
+        for i, persp in enumerate(perspectives):
+            co[:, i] = opinions[persp][str(t)].values
+        jsd[t] = jsd_opinions(co)
+
+    return jsd
 
 
 def perspective_jsd_matrix(params, nTopics, perspectives):
