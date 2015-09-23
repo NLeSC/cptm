@@ -26,15 +26,12 @@ sampler = get_sampler(config, corpus, nTopics=None, initialize=False)
 words = corpus.topic_words()
 topics = load_topics(config)
 opinions = load_opinions(config)
-print opinions
 nks = load_nks(config)
-print nks
 
 results = pd.DataFrame(index=words, columns=['jsd'])
 
 for idx, word in enumerate(words):
     co = contrastive_opinions(word, topics, opinions, nks)
-    print co
     jsd = jsd_opinions(co.values)
     results.set_value(word, 'jsd', jsd)
 
