@@ -24,7 +24,7 @@ opinions = load_opinions(config)
 
 logger.info('calculating jsd')
 # combine opinions from different perspectives and calculate jsd
-co = np.zeros((len(corpus.opinionDict), corpus.nPerspectives))
+co = np.zeros((len(corpus.opinionDictionary), corpus.nPerspectives))
 jsd = np.zeros(nTopics)
 for t in range(nTopics):
     for i in range(len(opinions)):
