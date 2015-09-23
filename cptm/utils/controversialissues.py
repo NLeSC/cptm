@@ -153,6 +153,34 @@ def perspective_jsd_matrix(params, nTopics, perspectives):
     return perspective_jsd_matrix
 
 
+def average_pairwise_jsd(jsd, opinions, perspectives):
+    """Calculate average pairwise jsd for a list of perspectives
+
+    Parameters
+        jsd : numpy ndarray
+            perspective jsd matrix (see perspective_jsd_matrix())
+        perspectives : list of perspective's names
+            list of perspectives to calculate the average pairwise jsd for
+
+    Returns
+        numpy array
+            numpy array containing average pairwise jsd for each topic
+    """
+    nTopics = jsd.shape[0]
+    ps = opinions.keys()
+
+    result = np.zeros(nTopics)
+
+    for t in range(nTopics):
+        pw_jsds = []
+        for persp1, persp2 in combinations(perspectives, 2):
+            index1 = ps.index(persp1)
+            index2 = ps.index(persp2)
+            pw_jsds.append(jsd[t, index1, index2])
+        result[t] = np.mean(pw_jsds)
+    return result
+
+
 def clustered_jsd(jsd, perspectives, clusters):
     result = []
     for cluster, persps in clusters.iteritems():
