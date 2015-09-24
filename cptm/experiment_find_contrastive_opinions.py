@@ -2,10 +2,10 @@ import logging
 import pandas as pd
 import argparse
 
-from cptm.utils.experiment import load_config, get_corpus, get_sampler, \
-    load_topics, load_opinions, load_nks
+from cptm.utils.experiment import load_config, get_corpus, load_topics, \
+    load_opinions, load_nks
 from cptm.utils.controversialissues import contrastive_opinions, \
-    jsd_opinions, perspective_jsd_matrix, average_pairwise_jsd
+    jsd_opinions
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(levelname)s : %(message)s', level=logging.INFO)
@@ -21,8 +21,6 @@ args = parser.parse_args()
 
 config = load_config(args.json)
 corpus = get_corpus(config)
-
-sampler = get_sampler(config, corpus, nTopics=None, initialize=False)
 
 words = corpus.topic_words()
 topics = load_topics(config)

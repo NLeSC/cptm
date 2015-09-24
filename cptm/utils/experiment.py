@@ -106,7 +106,6 @@ def load_opinions(params):
     nTopics = params.get('nTopics')
     outDir = params.get('outDir')
     opinion_files = glob(outDir.format('/opinions_*_{}.csv'.format(nTopics)))
-    print opinion_files
     opinions = {}
     for f in opinion_files:
         m = re.match(r'.+opinions_(.+).csv', f)

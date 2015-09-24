@@ -3,7 +3,6 @@ import pandas as pd
 from scipy.stats import entropy
 import logging
 from itertools import combinations
-from cptm.utils.experiment import opinionFileName
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(time)s : %(levelname)s : %(message)s',
