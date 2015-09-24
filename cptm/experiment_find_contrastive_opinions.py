@@ -40,7 +40,7 @@ for idx, word in enumerate(words):
                                                             len(words)))
 
 fName = 'co_words_{}.csv'.format(config.get('nTopics'))
-results.to_csv(config.get('outDir').format(fName))
+results.to_csv(config.get('outDir').format(fName), encoding='utf-8')
 
 print 'top 20 words with most contrastive opinions'
 top = pd.Series(results['jsd'])
