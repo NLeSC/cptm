@@ -72,6 +72,32 @@ def contrastive_opinions(query, topics, opinions, nks):
     return pd.concat(result, axis=1, keys=[s.name for s in result])
 
 
+def co2opinions(co, perspectives):
+    """Convert contrastive opinion to opinions format
+
+    The contrastive_opinions method returns a pandas DataFrame with a column
+    for each perspective. The average_pairwise_jsd method expects these numbers
+    in the format of a dict with as keys the perspective names and as values a
+    pandas DataFrame containing an opinion. This method converts the
+    contrastive opinions to the opinions format.
+
+    The dict containing pandas DataFrames can be used to calculate
+    average_pairwise_jsd for arbitrairy sets of perspectives.
+
+    Parameters:
+        co : pandas DataFrame
+            pandas DataFrame containing contrastive opinions
+        perspectives : list of strings
+            list containing perspectives names.
+    """
+    co_opinions = {}
+    for persp in perspectives:
+        df = pd.DataFrame(co[persp])
+        df.columns = ['0']
+        co_opinions[persp] = df
+    return co_opinions
+
+
 def jsd_opinions(co):
     """Calculate Jensen-Shannon divergence between (contrastive) opinions.
 
