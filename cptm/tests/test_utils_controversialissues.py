@@ -73,8 +73,8 @@ def test_contrastive_opinions_prob_distr():
 def test_perspective_jsd_matrix_symmetric():
     nTopics = 20
     params = {'nTopics': nTopics, 'outDir': 'cptm/tests/data/{}'}
-    perspectives = ['p0', 'p1']
-    jsd_matrix = perspective_jsd_matrix(params, nTopics, perspectives)
+    opinions = load_opinions(params)
+    jsd_matrix = perspective_jsd_matrix(opinions, params.get('nTopics'))
 
     for i in range(nTopics):
         jsd = jsd_matrix[i]
@@ -84,8 +84,8 @@ def test_perspective_jsd_matrix_symmetric():
 def test_perspective_jsd_matrix_diagonal_zeros():
     nTopics = 20
     params = {'nTopics': nTopics, 'outDir': 'cptm/tests/data/{}'}
-    perspectives = ['p0', 'p1']
-    jsd_matrix = perspective_jsd_matrix(params, nTopics, perspectives)
+    opinions = load_opinions(params)
+    jsd_matrix = perspective_jsd_matrix(opinions, params.get('nTopics'))
 
     for i in range(nTopics):
         jsd = jsd_matrix[i]
@@ -106,3 +106,20 @@ def test_filter_opinions():
 
         for p in perspectives:
             yield assert_true, p in filtered.keys()
+
+# average pairwise jsd for all perspectives is the same as jsd as defined in
+# Fang2012
+# can we use this?
+#    co_opinions = {}
+#    for persp in opinions.keys():
+#        df = pd.DataFrame(co[persp])
+#        df.columns = ['0']
+#        co_opinions[persp] = df
+#    print co_opinions
+
+#    perspective_jsd = perspective_jsd_matrix(co_opinions, 1)
+#    pw_jsd = average_pairwise_jsd(perspective_jsd, co_opinions,
+#                                  opinions.keys())
+#
+#
+#    results.set_value(word, 'pw_jsd', pw_jsd)

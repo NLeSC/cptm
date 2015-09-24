@@ -2,7 +2,7 @@ import logging
 import argparse
 import numpy as np
 
-from utils.experiment import load_config, get_corpus
+from utils.experiment import load_config, load_opinions
 from utils.controversialissues import perspective_jsd_matrix
 
 logging.basicConfig(format='%(levelname)s : %(message)s', level=logging.DEBUG)
@@ -15,11 +15,10 @@ args = parser.parse_args()
 
 config = load_config(args.json)
 
-corpus = get_corpus(config)
+opinions = load_opinions(config)
 nTopics = config.get('nTopics')
 
-perspectives = [p.name for p in corpus.perspectives]
-perspective_jsd = perspective_jsd_matrix(config, nTopics, perspectives)
+perspective_jsd = perspective_jsd_matrix(opinions, nTopics)
 
 print perspective_jsd
 print perspective_jsd.sum(axis=(2, 1))

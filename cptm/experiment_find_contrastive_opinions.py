@@ -4,7 +4,8 @@ import argparse
 
 from cptm.utils.experiment import load_config, get_corpus, get_sampler, \
     load_topics, load_opinions, load_nks
-from cptm.utils.controversialissues import contrastive_opinions, jsd_opinions
+from cptm.utils.controversialissues import contrastive_opinions, \
+    jsd_opinions, perspective_jsd_matrix, average_pairwise_jsd
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(levelname)s : %(message)s', level=logging.INFO)

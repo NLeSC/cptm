@@ -123,7 +123,7 @@ def jsd_for_all_topics(opinions):
     return jsd
 
 
-def perspective_jsd_matrix(params, nTopics, perspectives):
+def perspective_jsd_matrix(opinions, nTopics):
     """Return the perspective jsd matrix.
 
     Returns:
@@ -134,12 +134,13 @@ def perspective_jsd_matrix(params, nTopics, perspectives):
     """
     logger.debug('calculate matrix containing pairwise JSD between '
                  'perspectives')
+    perspectives = opinions.keys()
     nP = len(perspectives)
     perspective_jsd_matrix = np.zeros((nTopics, nP, nP), np.float)
 
     for persp1, persp2 in combinations(perspectives, 2):
-        opinions1 = pd.read_csv(opinionFileName(params, persp1))
-        opinions2 = pd.read_csv(opinionFileName(params, persp2))
+        opinions1 = opinions[persp1]
+        opinions2 = opinions[persp2]
 
         for t in range(nTopics):
             co = np.column_stack((opinions1[str(t)].values,
