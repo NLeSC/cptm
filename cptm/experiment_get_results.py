@@ -3,6 +3,7 @@ import pandas as pd
 import argparse
 import sys
 import tarfile
+import os
 
 from utils.experiment import load_config, get_corpus, get_sampler, \
     thetaFileName, topicFileName, opinionFileName, tarFileName
@@ -58,4 +59,5 @@ with tarfile.open(tarFileName(config), "w:gz") as tar:
     for name in [thetaFileName(config), topicFileName(config)] + \
                 [opinionFileName(config, p.name)
                     for p in sampler.corpus.perspectives]:
-            tar.add(name)
+            path, fName = os.path.split(name)
+            tar.addfile(tarfile.TarInfo(fName), file(name))
