@@ -36,7 +36,14 @@ logger.info('estimating parameters')
 sampler.estimate_parameters(start=start, end=end)
 
 logger.info('saving files')
-pd.DataFrame(sampler.theta).to_csv(thetaFileName(config))
+
+documents = []
+for persp in corpus.perspectives:
+    for f in persp.corpus().input:
+        f = f.replace(config.get('inputData').replace('*', ''), '')
+        documents.append(f)
+theta = sampler.theta_to_df(sampler.theta, documents)
+theta.to_csv(thetaFileName(config), encoding='utf8')
 
 topics = sampler.topics_to_df(phi=sampler.topics, words=corpus.topic_words())
 topics.to_csv(topicFileName(config), encoding='utf8')

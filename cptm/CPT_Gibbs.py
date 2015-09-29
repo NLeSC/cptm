@@ -464,6 +464,23 @@ class GibbsSampler():
         df = df.transpose()
         return df
 
+    def theta_to_df(self, theta, documents):
+        """Returns a pandas DataFrame containing doc ids x topic probabilities.
+
+        Parameters:
+        theta : numpy array
+            Array containing the word probabilities for the topics.
+        documents : list of strings
+            list of document ids.
+
+        Returns:
+        pandas DataFrame
+            containing document ids x topic probabilities.
+        """
+        logger.debug('creating dataframe with theta')
+        df = pd.DataFrame(theta, index=documents)
+        return df
+
     def __str__(self):
         return 'CPT GibbsSampler: {} perspectives, {} topics,  {} ' \
                'iterations, alpha: {}, beta: {}, beta_o: {}'. \
