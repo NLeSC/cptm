@@ -33,8 +33,11 @@ def get_top_topic_words(topics, opinions, t, top=10):
     return pd.concat(dfs, axis=1)
 
 
-def topic_str(df, single_line=False, weights=False):
-    opinion_labels = [l for l in df.columns if not l.startswith('weights')]
+def topic_str(df, single_line=False, weights=False, opinions=True):
+    if opinions:
+        opinion_labels = [l for l in df.columns if not l.startswith('weights')]
+    else:
+        opinion_labels = [l for l in df.columns if l.startswith('topic')]
 
     if not single_line:
         if not weights:
