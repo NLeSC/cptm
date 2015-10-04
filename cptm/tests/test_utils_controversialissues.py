@@ -31,12 +31,17 @@ def test_jensen_shannon_divergence_symmetric():
 
 
 def test_jensen_shannon_divergence_known_value():
-    """Jensen-Shannon divergence of v1 and v2 == 0.01352883"""
+    """Test Jensen-Shannon Divergence calculation for known values"""
     v1 = [0.2, 0.2, 0.2, 0.2, 0.2]
     v2 = [0.2, 0.2, 0.2, 0.3, 0.1]
     df1 = DataFrame({'p0': v1, 'p1': v2})
+    yield assert_almost_equal, 0.01951797627, jsd_opinions(df1.values)
 
-    assert_almost_equal(0.01352883, jsd_opinions(df1.values))
+    v1 = [0.5,0.5,0]
+    v2 = [0,0.1,0.9]
+    df1 = DataFrame({'p0': v1, 'p1': v2})
+
+    yield assert_almost_equal, 0.804993273, jsd_opinions(df1.values)
 
 
 def test_contrastive_opinions_result_shape():
