@@ -1,12 +1,14 @@
 from nose.tools import assert_equal, assert_true
 from numpy.testing import assert_almost_equal
-from numpy import load
+from numpy import load, sum, zeros
 from pandas import DataFrame
 from itertools import combinations, chain
+from numpy.random import rand
 
 from cptm.utils.experiment import load_topics, load_opinions
 from cptm.utils.controversialissues import jsd_opinions, \
-    contrastive_opinions, perspective_jsd_matrix, filter_opinions
+    contrastive_opinions, perspective_jsd_matrix, filter_opinions, \
+    average_pairwise_jsd, jsd_for_all_topics
 
 
 def test_jensen_shannon_divergence_self():
@@ -106,6 +108,60 @@ def test_filter_opinions():
 
         for p in perspectives:
             yield assert_true, p in filtered.keys()
+
+
+def test_pairwise_jsd_equal_to_jsd_for_pairs_of_perspectives():
+    nTopics = 4
+    OT = 7
+    cn = [str(t) for t in range(nTopics)]
+    perspectives = ['p0', 'p1', 'p2']
+
+    # generate random opinions
+    opinions = {}
+    for p in perspectives:
+        o = rand(OT, nTopics)
+        opinions[p] = DataFrame(o / sum(o, axis=0, keepdims=True), columns=cn)
+
+    perspective_jsd = perspective_jsd_matrix(opinions, nTopics)
+    ps = opinions.keys()
+
+    for p1, p2 in combinations(ps, 2):
+        op = filter_opinions([p1, p2], opinions)
+        jsd = jsd_for_all_topics(op)
+
+        idx1 = ps.index(p1)
+        idx2 = ps.index(p2)
+
+        for t in range(nTopics):
+            yield assert_equal, jsd[t], perspective_jsd[t, idx1, idx2]
+
+
+def test_value_of_avg_pw_jsd_equal_to_avg_jsd_of_pairs_of_perspectives():
+    nTopics = 10
+    OT = 7
+    cn = [str(t) for t in range(nTopics)]
+    perspectives = ['p0', 'p1', 'p2']
+
+    # generate random opinions
+    opinions = {}
+    for p in perspectives:
+        o = rand(OT, nTopics)
+        opinions[p] = DataFrame(o / sum(o, axis=0, keepdims=True), columns=cn)
+
+    perspective_jsd = perspective_jsd_matrix(opinions, nTopics)
+    ps = opinions.keys()
+
+    avg_pw_jsd = average_pairwise_jsd(perspective_jsd, opinions, ps)
+
+    pairs = [(p1, p2) for p1, p2 in combinations(ps, 2)]
+    jsd = zeros((len(pairs), nTopics))
+    for index, (p1, p2) in enumerate(pairs):
+        op = filter_opinions([p1, p2], opinions)
+        jsd[index] = jsd_for_all_topics(op)
+
+    for index, value in enumerate(jsd.mean(axis=0)):
+        yield assert_equal, value, avg_pw_jsd[index]
+
 
 # average pairwise jsd for all perspectives is the same as jsd as defined in
 # Fang2012
