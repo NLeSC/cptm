@@ -73,10 +73,10 @@ def test_topicFileName():
     assert_equal(fName, '/topics_{}.csv'.format(nTopics))
 
 
-def test_opinionFileName():
-    config['nTopics'] = nTopics
-    return join(params.get('outDir').format(''),
-                'opinions_{}_{}.csv'.format(name, nTopics))
+#def test_opinionFileName():
+#    config['nTopics'] = nTopics
+#    return join(config.get('outDir').format(''),
+#                'opinions_{}_{}.csv'.format(name, nTopics))
 
 
 #def experimentName(params):
