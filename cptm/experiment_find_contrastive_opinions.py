@@ -58,7 +58,6 @@ for idx, word in enumerate(words):
         logger.info('jsd for {}: {} (word {} of {})'.format(word, jsd, idx+1,
                                                             len(words)))
 
-fName = 'co_words_{}.csv'.format(config.get('nTopics'))
 results.to_csv(fName, encoding='utf-8')
 
 print 'top 20 words with most contrastive opinions'
