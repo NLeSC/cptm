@@ -120,7 +120,7 @@ def jsd_opinions(co):
     result = np.zeros(nPerspectives, dtype=np.float)
     p_avg = np.mean(co, axis=1)
     for persp in range(nPerspectives):
-        result[persp] = entropy(co[:, persp], p_avg)
+        result[persp] = entropy(co[:, persp], p_avg, 2)
     return np.mean(result)
 
 
@@ -217,4 +217,3 @@ def clustered_jsd(jsd, perspectives, clusters):
             dist += jsd[p1_idx, p2_idx]
         result.append(dist)
     return np.array(result)
-
