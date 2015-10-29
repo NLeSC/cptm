@@ -47,7 +47,7 @@ def test_load_config_default_values():
     params['sampleEstimateEnd'] = None
 
     for p, v in params.iteritems():
-        yield assert_equal, v, params[p]
+        yield assert_equal, v, config[p]
 
 
 def test_add_parameter():
@@ -73,21 +73,25 @@ def test_topicFileName():
     assert_equal(fName, '/topics_{}.csv'.format(nTopics))
 
 
-#def test_opinionFileName():
-#    config['nTopics'] = nTopics
-#    return join(config.get('outDir').format(''),
-#                'opinions_{}_{}.csv'.format(name, nTopics))
+def test_opinionFileName():
+    config['nTopics'] = nTopics
+    perspectives = ['p0', 'p1', 'p2']
+    for p in perspectives:
+        fName = opinionFileName(config, p)
+        yield assert_equal, fName, '/opinions_{}_{}.csv'.format(p, nTopics)
 
 
-#def experimentName(params):
-#    fName = params.get('outDir')
-#    fName = fName.replace('/{}', '')
-#    _p, name = os.path.split(fName)
-#    return name
+def test_experimentName():
+    config['outDir'] = '/tmp/test/{}'
+
+    assert_equal('test', experimentName(config))
 
 
-#def tarFileName(params):
-#    nTopics = params.get('nTopics')
-#    name = experimentName(params)
-#    return os.path.join(params.get('outDir').format(''),
-#                        '{}_{}.tgz'.format(name, nTopics))
+def test_tarFileName():
+    config['outDir'] = '/{}'
+    config['nTopics'] = nTopics
+    name = experimentName(config)
+
+    fName = tarFileName(config)
+
+    assert_equal(fName, '/{}_{}.tgz'.format(name, nTopics))
