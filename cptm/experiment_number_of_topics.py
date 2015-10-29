@@ -1,3 +1,10 @@
+"""Run Gibbs sampler for different # topics
+
+Given a json file containing an experiment configuration a Gibbs sampler is
+run for different numbers of topics.
+
+Usage: python cptm/experiment_number_of_topics.py /path/to/experiment.json
+"""
 import logging
 from multiprocessing import Pool
 import argparse

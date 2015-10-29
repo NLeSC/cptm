@@ -1,3 +1,12 @@
+"""Remove saved parameter samples for certain iterations
+
+Before, the Gibbs sampler saved estimates for all iterations. However, because
+this took to much disk space, now the sampler only saves every tenth estimate.
+This script removes samples for results generated with an old version of the
+sampler.
+
+Usage: python experiment_prune_samples.py /path/to/experiment.json
+"""
 import logging
 import argparse
 from os import remove

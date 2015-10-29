@@ -1,3 +1,8 @@
+"""Model contrastive opinions for all topic words
+
+Usage: python experiment_find_contrastive_opinions.py experiment.json
+[-p <list of perspectives>] [-o /path/to/output]
+"""
 import logging
 import pandas as pd
 import argparse

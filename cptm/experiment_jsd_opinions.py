@@ -1,3 +1,10 @@
+"""Calculate Jensen-Shannon divergence between opinions
+
+Requires topics and opinions to be estimated before (see
+experiment_get_results.py).
+
+Usage: python experiment_jsd_opinions.py experiment.json
+"""
 import logging
 import argparse
 import pandas as pd
@@ -21,7 +28,6 @@ nTopics = config.get('nTopics')
 
 logger.info('loading opinions')
 opinions = load_opinions(config)
-print opinions
 
 logger.info('calculating jsd')
 # combine opinions from different perspectives and calculate jsd

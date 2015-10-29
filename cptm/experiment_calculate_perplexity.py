@@ -1,3 +1,12 @@
+"""Calculate opinion perplexity for different numbers of topics
+
+Calclulate opinion perplexity for the test set as described in [Fang et al.
+2012] section 5.1.1.
+
+This script should be run after experiment_number_of_topics.py.
+
+Usage: python cptm/experiment_calculate_perplexity.py /path/to/experiment.json.
+"""
 import pandas as pd
 import logging
 from multiprocessing import Pool

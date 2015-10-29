@@ -1,3 +1,16 @@
+"""Generate iPython notebook to inspect the results of the experiment
+
+The resulting iPython notebook contains code to show results of cptm
+experiments:
+
+- inspect perplexity results to determine the 'optimal' number of topics and
+to choose appropriate values for configuration parameters sampleEstimateStart
+and sampleEstimateEnd.
+- results for topics and opinions
+
+Usage: python cptm/experiment_generate_results_nb.py /path/to/dir/with/results/
+experimentName /path/to/resulting/notebook.ipynb
+"""
 import logging
 import argparse
 from IPython import nbformat as nbf

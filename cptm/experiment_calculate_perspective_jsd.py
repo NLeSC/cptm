@@ -1,3 +1,9 @@
+"""Calculate the pairwise jsd between perspectives for all topics
+
+The results are saved in the outDir.
+
+Usage: python experiment_calculate_perspective_jsd.py experiment.json
+"""
 import logging
 import argparse
 import numpy as np

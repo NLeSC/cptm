@@ -1,5 +1,8 @@
+"""Estimate theta, phi topics and phi opionions for a certain number of topics
+
+Usage: python experiment_get_results.py experiment.json
+"""
 import logging
-import pandas as pd
 import argparse
 import sys
 import tarfile
