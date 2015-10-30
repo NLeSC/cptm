@@ -120,7 +120,9 @@ def jsd_opinions(co):
     result = np.zeros(nPerspectives, dtype=np.float)
     p_avg = np.mean(co, axis=1)
     for persp in range(nPerspectives):
-        result[persp] = entropy(co[:, persp], p_avg, 2)
+        result[persp] = entropy(co[:, persp], qk=p_avg, base=2)
+    import scipy
+    logger.debug('scipy version: {}'.format(scipy.__version__))
     return np.mean(result)
 
 
