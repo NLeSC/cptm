@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/jvdzwaan/cptm.svg?branch=develop)](https://travis-ci.org/jvdzwaan/cptm)
+[![Build Status](https://travis-ci.org/NLeSC/cptm.svg?branch=develop)](https://travis-ci.org/NLeSC/cptm.svg?branch=develop)
 
 # Cross-Perspective Topic Modeling
 
