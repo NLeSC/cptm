@@ -21,9 +21,9 @@ Install the requirements (in virtual environment if desired).
 
     pip install -r requirements.txt
 
-Compile Cython code.
+Install cptm (compiles Cython code).
 
-    python setup.py build_ext --inplace
+    python setup.py install
 
 Add the cptm directory to the `PYTHONPATH` (otherwise the scripts don't work).
 
