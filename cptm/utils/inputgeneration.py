@@ -2,6 +2,7 @@
 import os
 import logging
 import codecs
+import re
 
 
 logger = logging.getLogger('inputgeneration')
@@ -55,3 +56,21 @@ class Perspective():
         len_opinion_words = sum([len(self.words[w])
                                 for w in self.posOpinion])
         return len_topic_words, len_opinion_words
+
+
+def remove_trailing_digits(word):
+    """Convert words like d66 to d.
+
+    In the folia files from politicalmashup, words such as d66 have been
+    extracted as two words (d and 66) and only d ended up in the data input
+    files. The folia files were probably created with an old version of frog,
+    because currenly, words like these are parsed correctly.
+
+    This function can be used when parsing and lemmatizing new text to match
+    the vocabulary used in the old folia files.
+    """
+    regex = re.compile('^(.+?)(\d+)$', flags=re.UNICODE)
+    m = regex.match(word)
+    if m:
+        return m.group(1)
+    return word
