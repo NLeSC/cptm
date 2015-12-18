@@ -33,16 +33,32 @@ for year in years:
     data_files = glob.glob('{}data_folia/*.xml.gz'.format(year))
     data_files.sort()
     print '{},{}'.format(year, len(data_files))
-    for df in [data_files[0], data_files[-1]]:
-        f = gzip.open(df)
-        context = etree.iterparse(f, events=('end',), tag=date_tag,
-                                  huge_tree=True)
-        for event, elem in context:
-            d = datetime.datetime.strptime(elem.text, "%Y-%m-%d").date()
-            if d < min_date:
-                min_date = d
-            if d > max_date:
-                max_date = d
+
+years.sort()
+min_year = years[0]
+print 'min year', min_year
+max_year = years[-1]
+print 'max year', max_year
+
+data_files = glob.glob('{}data_folia/*.xml.gz'.format(min_year))
+for df in data_files:
+    f = gzip.open(df)
+    context = etree.iterparse(f, events=('end',), tag=date_tag,
+                              huge_tree=True)
+    for event, elem in context:
+        d = datetime.datetime.strptime(elem.text, "%Y-%m-%d").date()
+        if d < min_date:
+            min_date = d
+
+data_files = glob.glob('{}data_folia/*.xml.gz'.format(max_year))
+for df in data_files:
+    f = gzip.open(df)
+    context = etree.iterparse(f, events=('end',), tag=date_tag,
+                              huge_tree=True)
+    for event, elem in context:
+        d = datetime.datetime.strptime(elem.text, "%Y-%m-%d").date()
+        if d > max_date:
+            max_date = d
 
 print 'time period: ', min_date, max_date
 
