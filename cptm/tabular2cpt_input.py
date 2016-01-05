@@ -35,7 +35,7 @@ try:
 except:
     logger.error('Cannot connect to the Frog server. '
                  'Is it running at port {}?'.format(port))
-    logger.info('Start the Frog server with "docker run ''-p 127.0.0.1:{}:{} '
+    logger.info('Start the Frog server with "docker run -p 127.0.0.1:{}:{} '
                 '-t -i proycon/lamachine frog -S {}"'.format(port, port, port))
     sys.exit(1)
 
@@ -58,5 +58,8 @@ for i, text in enumerate(input_data[args.text_field]):
                 pos = regex.sub('', ext_pos)
                 if pos in word_types():
                     p.add(pos, remove_trailing_digits(lemma))
-        file_name = '{}.txt'.format(i)
+        try:
+            file_name = '{}.txt'.format(input_data['id'][i])
+        except:
+            file_name = '{}.txt'.format(i)
         p.write2file(args.out_dir, file_name)
