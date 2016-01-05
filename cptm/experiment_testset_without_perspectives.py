@@ -5,23 +5,30 @@ The corpus is not divided in perspectives.
 Used to calculate theta for the CAP vragenuurtje data.
 """
 import logging
+import argparse
 import pandas as pd
 import os
 
 from CPTCorpus import CPTCorpus
-from cptm.utils.experiment import get_sampler, thetaFileName
+from cptm.utils.experiment import get_sampler, thetaFileName, load_config, \
+    topicFileName
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(levelname)s : %(message)s', level=logging.DEBUG)
 
-input_dir = ['/home/jvdzwaan/data/dilipad/CAP/vragenuurtje']
-topicDict = '/home/jvdzwaan/data/dilipad/experiment/topicDict.dict'
-opinionDict = '/home/jvdzwaan/data/dilipad/experiment/opinionDict.dict'
-outDir = '/home/jvdzwaan/data/dilipad/CAP/vragenuurtje_results/{}'
-nTopics = 60
-phi_topic_file = '/home/jvdzwaan/data/dilipad/experiment/topics_60.csv'
-start = 100
-end = 199
+parser = argparse.ArgumentParser()
+parser.add_argument('json', help='json file containing experiment '
+                    'configuration.')
+parser.add_argument('data_dir', help='dir containing the input data.')
+parser.add_argument('out_dir', help='dir to write results to.')
+args = parser.parse_args()
+
+params = load_config(args.json)
+
+input_dir = [args.data_dir]
+topicDict = params.get('outDir').format('topicDict.dict')
+opinionDict = params.get('outDir').format('opinionDict.dict')
+phi_topic_file = topicFileName(params)
 
 phi_topic = pd.read_csv(phi_topic_file, index_col=0, encoding='utf-8').values.T
 #print phi_topic.shape
@@ -29,20 +36,18 @@ phi_topic = pd.read_csv(phi_topic_file, index_col=0, encoding='utf-8').values.T
 
 corpus = CPTCorpus(input=input_dir, topicDict=topicDict,
                    opinionDict=opinionDict, testSplit=100, file_dict=None,
-                   topicLines=[0], opinionLines=[1])
+                   topicLines=params.get('topicLines'),
+                   opinionLines=params.get('opinionLines'))
 print str(corpus)
 
-params = {
-    'outDir': outDir,
-    'nIter': 200,
-    'beta': 0.02,
-    'beta_o': 0.02,
-    'nTopics': nTopics
-}
-sampler = get_sampler(params, corpus, nTopics=nTopics, initialize=False)
+params['outDir'] = args.out_dir
+
+sampler = get_sampler(params, corpus, nTopics=params.get('nTopics'),
+                      initialize=False)
 sampler._initialize(phi_topic=phi_topic)
 sampler.run()
-sampler.estimate_parameters(start=start, end=end)
+sampler.estimate_parameters(start=params.get('sampleEstimateStart'),
+                            end=params.get('sampleEstimateEnd'))
 
 logger.info('saving files')
 
