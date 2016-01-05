@@ -41,21 +41,25 @@ corpus = CPTCorpus(input=input_dir, topicDict=topicDict,
 print str(corpus)
 
 params['outDir'] = args.out_dir
+nTopics = params.get('nTopics')
 
-sampler = get_sampler(params, corpus, nTopics=params.get('nTopics'),
-                      initialize=False)
-sampler._initialize(phi_topic=phi_topic)
-sampler.run()
-sampler.estimate_parameters(start=params.get('sampleEstimateStart'),
-                            end=params.get('sampleEstimateEnd'))
+for i in range(10):
+    sampler = get_sampler(params, corpus, nTopics=nTopics,
+                          initialize=False)
+    sampler._initialize(phi_topic=phi_topic)
+    sampler.run()
+    sampler.estimate_parameters(start=params.get('sampleEstimateStart'),
+                                end=params.get('sampleEstimateEnd'))
 
-logger.info('saving files')
+    logger.info('saving files')
 
-documents = []
-for persp in corpus.perspectives:
-    print str(persp)
-    for f in persp.testFiles:
-        p, b = os.path.split(f)
-        documents.append(b)
-theta = sampler.theta_to_df(sampler.theta, documents)
-theta.to_csv(thetaFileName(params), encoding='utf8')
+    documents = []
+    for persp in corpus.perspectives:
+        print str(persp)
+        for f in persp.testFiles:
+            p, b = os.path.split(f)
+            documents.append(b)
+    theta = sampler.theta_to_df(sampler.theta, documents)
+    theta.to_csv(os.path.join(params['outDir'],
+                              'theta_{}_{}.csv'.format(nTopics, i)),
+                 encoding='utf8')
