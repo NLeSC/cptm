@@ -14,10 +14,9 @@ import sys
 import argparse
 import re
 
-from pynlpl.clients.frogclient import FrogClient
-
 from cptm.utils.inputgeneration import Perspective, remove_trailing_digits
 from cptm.utils.dutchdata import pos_topic_words, pos_opinion_words, word_types
+from cptm.utils.frog import get_frogclient
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(levelname)s : %(message)s', level=logging.DEBUG)
@@ -28,16 +27,7 @@ parser.add_argument('text_field', help='name of the text field')
 parser.add_argument('out_dir', help='directory where output should be stored')
 args = parser.parse_args()
 
-port = 8020
-
-try:
-    frogclient = FrogClient('localhost', port)
-except:
-    logger.error('Cannot connect to the Frog server. '
-                 'Is it running at port {}?'.format(port))
-    logger.info('Start the Frog server with "docker run -p 127.0.0.1:{}:{} '
-                '-t -i proycon/lamachine frog -S {}"'.format(port, port, port))
-    sys.exit(1)
+frogclient = get_frogclient()
 
 regex = re.compile(r'\(.*\)')
 
