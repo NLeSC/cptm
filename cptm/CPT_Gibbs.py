@@ -368,6 +368,45 @@ class GibbsSampler():
 
         return tw_perp, ow_perp
 
+    def opinion_word_perplexity_per_document(self, phi_topic):
+        """Calculate opinion word perplexity per document
+
+        Opinion word perplexity is calculated per document in the
+        test set.
+        """
+        logger.info('calculating opinion wor perplexity per document '
+                    '({})'.format(str(self)))
+        # run Gibbs sampler to find estimates for theta and phi_opinions
+        # of the test set
+        s = GibbsSampler(self.corpus, nTopics=self.nTopics, nIter=self.nIter,
+                         alpha=self.alpha, beta=self.beta, beta_o=self.beta_o,
+                         initialize=False)
+        s._initialize(phi_topic=phi_topic)
+        s.run()
+
+        file_dict = s.corpus.get_files_in_train_and_test_sets()
+
+        results = {}
+        for d, persp, d_p, doc in self.corpus.testSet():
+            opinion_words_in_document = 0
+            log_p_od = 0.0
+
+            for w_id, freq in doc['opinion']:
+                opinion_words_in_document += freq
+                f1 = np.log(np.sum(s.theta[d] * s.opinions[persp][:, w_id]))
+                log_p_od += freq * f1
+
+            ow_perp = np.exp(-log_p_od / opinion_words_in_document)
+            p_name = self.corpus.perspectives[persp].name
+
+            if not results.get(p_name):
+                results[p_name] = []
+            results[p_name].append(ow_perp)
+
+        df_index = [os.path.basename(f) for f in file_dict['0']['test']]
+
+        return pd.DataFrame(results, index=df_index)
+
     def load_parameters(self, name, index=None, start=None, end=None):
         index = self._check_index(index)
         start, end = self._check_start_and_end(start, end)
