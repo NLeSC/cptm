@@ -164,7 +164,7 @@ def test_testSet():
 
 def test_illigal_values_for_testSplit():
     """No test set when value for testSplit parameter is illegal"""
-    values = [-1, 0, 100, 1000]
+    values = [-1, 0, 1000]
     for v in values:
         corpus2 = CPTCorpus(persp_dirs, testSplit=v, topicLines=[0],
                             opinionLines=[1])

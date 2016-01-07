@@ -327,7 +327,7 @@ class Perspective():
             self.input = input[:]
             self.testFiles = []
 
-            if testSplit and testSplit < 1:
+            if testSplit and (testSplit < 1 or testSplit > 100):
                 testSplit = None
                 logger.warn('illegal value for testSplit ({}); ' +
                             'not creating test set'.format(testSplit))
