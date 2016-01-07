@@ -273,6 +273,9 @@ class CPTCorpus():
 
     def save(self, file_name):
         logger.info('saving corpus under {}'.format(file_name))
+        directory = os.path.dirname(file_name)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
         file_dict = self.get_files_in_train_and_test_sets()
         with open(file_name, 'wb') as f:
             json.dump(file_dict, f, sort_keys=True, indent=4)
