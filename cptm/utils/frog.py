@@ -2,6 +2,7 @@ from pynlpl.clients.frogclient import FrogClient
 import logging
 import re
 import sys
+import signal
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(levelname)s : %(message)s', level=logging.INFO)
@@ -21,10 +22,22 @@ def get_frogclient(port=8020):
 
 
 def pos_and_lemmas(text, frogclient):
+    # add timeout functionality (so frog won't keep parsing faulty text
+    # forever)
+    signal.signal(signal.SIGALRM, timeout)
+    signal.alarm(300)
+
     regex = re.compile(r'\(.*\)')
 
-    for data in frogclient.process(text):
-        word, lemma, morph, ext_pos = data[:4]
-        if ext_pos:  # ext_pos can be None
-            pos = regex.sub('', ext_pos)
-            yield pos, lemma
+    try:
+        for data in frogclient.process(text):
+            word, lemma, morph, ext_pos = data[:4]
+            if ext_pos:  # ext_pos can be None
+                pos = regex.sub('', ext_pos)
+                yield pos, lemma
+    except Exception, e:
+        raise e
+
+
+def timeout(signum, frame):
+    raise Exception("Frog is taking too long!")
