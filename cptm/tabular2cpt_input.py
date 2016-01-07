@@ -12,11 +12,10 @@ import pandas as pd
 import logging
 import sys
 import argparse
-import re
 
 from cptm.utils.inputgeneration import Perspective, remove_trailing_digits
 from cptm.utils.dutchdata import pos_topic_words, pos_opinion_words, word_types
-from cptm.utils.frog import get_frogclient
+from cptm.utils.frog import get_frogclient, pos_and_lemmas
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(levelname)s : %(message)s', level=logging.DEBUG)
@@ -29,8 +28,6 @@ args = parser.parse_args()
 
 frogclient = get_frogclient()
 
-regex = re.compile(r'\(.*\)')
-
 if args.in_file.endswith('.xls') or args.in_file.endswith('.xlsx'):
     input_data = pd.read_excel(args.in_file)
 else:
@@ -42,12 +39,9 @@ for i, text in enumerate(input_data[args.text_field]):
         logger.info('Processing text {} of {}'.format(i + 1,
                     len(input_data[args.text_field])))
     if pd.notnull(text):
-        for data in frogclient.process(text):
-            word, lemma, morph, ext_pos = data[:4]
-            if ext_pos:  # ext_pos can be None
-                pos = regex.sub('', ext_pos)
-                if pos in word_types():
-                    p.add(pos, remove_trailing_digits(lemma))
+        for pos, lemma in pos_and_lemmas():
+            if pos in word_types():
+                p.add(pos, remove_trailing_digits(lemma))
         try:
             file_name = '{}.txt'.format(input_data['id'][i])
         except:
