@@ -98,6 +98,9 @@ class GibbsSampler():
                             dtype=np.int)
         self.ns = np.zeros((self.nPerspectives, self.nTopics), dtype=np.int)
 
+        if phi_topic is not None:
+            phi_topic_sum = np.sum(phi_topic, axis=1)
+
         # loop over the words in the corpus
         for d, persp, d_p, doc in self.documents:
             for w_id, i in self.corpus.words_in_document(doc, 'topic'):
@@ -105,7 +108,7 @@ class GibbsSampler():
                 if phi_topic is None:
                     topic = np.random.randint(0, self.nTopics)
                 else:
-                    p = phi_topic[:, w_id] / np.sum(phi_topic[:, w_id])
+                    p = phi_topic[:, w_id] / phi_topic_sum[w_id]
                     topic = self.sample_from(p)
                     #print len(phi_topic[:, w_id])
                     #print np.sum(phi_topic[:, w_id])
