@@ -23,8 +23,6 @@ from gibbs_inner import gibbs_inner
 
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(format='%(time)s : %(levelname)s : %(message)s',
-                    level=logging.INFO)
 
 
 class GibbsSampler():
