@@ -316,7 +316,13 @@ class Perspective():
             self.trainSet = Corpus(self.trainFiles, topicLines=topicLines,
                                    opinionLines=opinionLines)
 
-            self.name = self.persp_name(self.trainSet.input[0])
+            if len(self.trainSet.input) > 0:
+                self.name = self.persp_name(self.trainSet.input[0])
+            elif len(self.testSet.input > 0):
+                self.name = self.persp_name(self.testSet.input[0])
+            else:
+                self.name = 'UNKNOWN'
+
             logger.info('initialize perspective "{}" from file_dict'
                         .format(self.name))
         else:
