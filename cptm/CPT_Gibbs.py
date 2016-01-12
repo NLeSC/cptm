@@ -99,7 +99,7 @@ class GibbsSampler():
         self.ns = np.zeros((self.nPerspectives, self.nTopics), dtype=np.int)
 
         if phi_topic is not None:
-            phi_topic_sum = np.sum(phi_topic, axis=1)
+            phi_topic_sum = np.sum(phi_topic, axis=0)
 
         # loop over the words in the corpus
         for d, persp, d_p, doc in self.documents:
