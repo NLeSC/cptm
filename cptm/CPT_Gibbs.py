@@ -50,6 +50,7 @@ class GibbsSampler():
         if self.out_dir:
             if not os.path.exists(self.out_dir):
                 os.makedirs(out_dir)
+        logger.debug('output directory: {}'.format(self.out_dir))
         parameter_dir = self.get_parameter_dir_name()
         if not os.path.exists(parameter_dir):
             os.makedirs(parameter_dir)
@@ -100,6 +101,8 @@ class GibbsSampler():
 
         if phi_topic is not None:
             phi_topic_sum = np.sum(phi_topic, axis=0)
+
+        logger.debug('Starting loop over documents/words')
 
         # loop over the words in the corpus
         for d, persp, d_p, doc in self.documents:
@@ -163,6 +166,7 @@ class GibbsSampler():
         logger.info('started sampling ({})'.format(str(self)))
         if not self.out_dir:
             # store all parameter samples in memory
+            logger.debug('storing parameter samples in memory')
             self.theta_topic = np.zeros((self.nIter, self.DT, self.nTopics))
             self.phi_topic = np.zeros((self.nIter, self.nTopics, self.VT))
 
@@ -180,6 +184,7 @@ class GibbsSampler():
             gibbs_inner(self)
 
             # calculate theta and phi
+            logger.debug('calculate theta and phi')
             if not self.out_dir:
                 self.theta_topic[t] = self.calc_theta_topic()
                 self.phi_topic[t] = self.calc_phi_topic()
@@ -188,13 +193,18 @@ class GibbsSampler():
                     self.phi_opinion[p][t] = self.calc_phi_opinion(p)
             else:
                 if t == 0 or (t+1) % self.sampleInterval == 0:
-                    np.save(self.get_theta_file_name(t),
-                            self.calc_theta_topic())
-                    np.save(self.get_phi_topic_file_name(t),
-                            self.calc_phi_topic())
+                    fname = self.get_theta_file_name(t)
+                    np.save(fname, self.calc_theta_topic())
+                    logger.debug('writing to disk {}'.format(fname))
+
+                    fname = self.get_phi_topic_file_name(t)
+                    np.save(fname, self.calc_phi_topic())
+                    logger.debug('writing to disk {}'.format(fname))
+
                     for p in range(self.nPerspectives):
-                        np.save(self.get_phi_opinion_file_name(p, t),
-                                self.calc_phi_opinion(p))
+                        fname = self.get_phi_opinion_file_name(p, t)
+                        np.save(fname, self.calc_phi_opinion(p))
+                        logger.debug('writing to disk {}'.format(fname))
 
                 # save nk (for Contrastive Opinion Mining)
                 self.nks[t] = np.copy(self.nk)
@@ -379,9 +389,10 @@ class GibbsSampler():
                     '({})'.format(str(self)))
         # run Gibbs sampler to find estimates for theta and phi_opinions
         # of the test set
+        out_dir = os.path.join(self.out_dir, 'per_document_ow_perplexity')
         s = GibbsSampler(self.corpus, nTopics=self.nTopics, nIter=self.nIter,
                          alpha=self.alpha, beta=self.beta, beta_o=self.beta_o,
-                         initialize=False)
+                         out_dir=out_dir, initialize=False)
         s._initialize(phi_topic=phi_topic)
         s.run()
 
