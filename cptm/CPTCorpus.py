@@ -318,7 +318,7 @@ class Perspective():
 
             if len(self.trainSet.input) > 0:
                 self.name = self.persp_name(self.trainSet.input[0])
-            elif len(self.testSet.input > 0):
+            elif len(self.testSet.input) > 0:
                 self.name = self.persp_name(self.testSet.input[0])
             else:
                 self.name = 'UNKNOWN'
@@ -326,7 +326,10 @@ class Perspective():
             logger.info('initialize perspective "{}" from file_dict'
                         .format(self.name))
         else:
-            self.name = self.persp_name(input[0])
+            if len(input) > 0:
+                self.name = self.persp_name(input[0])
+            else:
+                self.name = 'UNKNOWN'
             logger.info('initialize perspective "{}" ({} documents)'
                         .format(self.name, len(input)))
             self.input = input[:]
