@@ -32,14 +32,13 @@ if __name__ == '__main__':
     if not os.path.exists(dir_out):
         os.makedirs(dir_out)
 
-    p = Perspective('', pos_topic_words(), pos_opinion_words())
-
     data_files = glob.glob('{}/*.csv'.format(dir_in))
 
     for i, data_file in enumerate(data_files):
         if i % 5 == 0:
             logger.info('Processing text {} of {}'.format(i + 1,
                         len(data_files)))
+        p = Perspective('', pos_topic_words(), pos_opinion_words())
         df = pd.read_csv(data_file, encoding='utf-8')
         text = ' '.join([line for line in df['content']])
         try:
