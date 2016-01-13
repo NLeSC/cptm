@@ -426,7 +426,15 @@ class GibbsSampler():
 
         df_index = [os.path.basename(f) for f in file_dict['0']['test']]
 
-        return pd.DataFrame(results, index=df_index)
+        # get theta
+        documents = []
+        for persp in self.corpus.perspectives:
+            print persp
+            documents += df_index
+        print documents
+        theta = s.theta_to_df(s.theta, documents)
+
+        return pd.DataFrame(results, index=df_index), theta
 
     def load_parameters(self, name, index=None, start=None, end=None):
         index = self._check_index(index)

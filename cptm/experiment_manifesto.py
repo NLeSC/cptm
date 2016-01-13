@@ -13,7 +13,8 @@ import os
 import sys
 
 from CPTCorpus import CPTCorpus
-from cptm.utils.experiment import get_sampler, load_config, get_corpus
+from cptm.utils.experiment import get_sampler, load_config, get_corpus, \
+    thetaFileName
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(levelname)s : %(message)s', level=logging.DEBUG)
@@ -66,8 +67,9 @@ params['outDir'] = args.out_dir
 corpus.save(os.path.join(params.get('outDir'), 'corpus.json'))
 
 sampler = get_sampler(params, corpus, nTopics=nTopics, initialize=False)
-result = sampler.opinion_word_perplexity_per_document(phi_topic=phi_topic,
-                                                      phi_opinion=phi_opinion)
-result.to_csv(os.path.join(params['outDir'],
-                           'opinion_word_perplexity_{}.csv'.format(nTopics)),
-              encoding='utf8')
+r, t = sampler.opinion_word_perplexity_per_document(phi_topic=phi_topic,
+                                                    phi_opinion=phi_opinion)
+r.to_csv(os.path.join(params['outDir'],
+                      'opinion_word_perplexity_{}.csv'.format(nTopics)),
+         encoding='utf8')
+t.to_csv(thetaFileName(params), encoding='utf8')
