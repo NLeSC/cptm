@@ -379,7 +379,8 @@ class GibbsSampler():
 
         return tw_perp, ow_perp
 
-    def opinion_word_perplexity_per_document(self, phi_topic):
+    def opinion_word_perplexity_per_document(self, index=None, phi_topic=None,
+                                             phi_opinion=None):
         """Calculate opinion word perplexity per document
 
         Opinion word perplexity is calculated per document in the
@@ -387,6 +388,14 @@ class GibbsSampler():
         """
         logger.info('calculating opinion wor perplexity per document '
                     '({})'.format(str(self)))
+
+        # load parameters
+        if phi_topic is None:
+            phi_topic = self.get_phi_topic(index)
+
+        if phi_opinion is None:
+            phi_opinion = self.get_phi_opinion(index)
+
         # run Gibbs sampler to find estimates for theta and phi_opinions
         # of the test set
         out_dir = os.path.join(self.out_dir, 'per_document_ow_perplexity')
@@ -405,7 +414,7 @@ class GibbsSampler():
 
             for w_id, freq in doc['opinion']:
                 opinion_words_in_document += freq
-                f1 = np.log(np.sum(s.theta[d] * s.opinions[persp][:, w_id]))
+                f1 = np.log(np.sum(s.theta[d] * phi_opinion[persp][:, w_id]))
                 log_p_od += freq * f1
 
             ow_perp = np.exp(-log_p_od / opinion_words_in_document)

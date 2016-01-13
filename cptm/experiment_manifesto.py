@@ -13,8 +13,7 @@ import os
 import sys
 
 from CPTCorpus import CPTCorpus
-from cptm.utils.experiment import get_sampler, load_config, topicFileName, \
-    get_corpus
+from cptm.utils.experiment import get_sampler, load_config, get_corpus
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(levelname)s : %(message)s', level=logging.DEBUG)
@@ -34,9 +33,6 @@ params = load_config(args.json)
 
 topicDict = params.get('outDir').format('topicDict.dict')
 opinionDict = params.get('outDir').format('opinionDict.dict')
-phi_topic_file = topicFileName(params)
-
-phi_topic = pd.read_csv(phi_topic_file, index_col=0, encoding='utf-8').values.T
 
 c_perspectives = get_corpus(params)
 perspectives = [p.name for p in c_perspectives.perspectives]
@@ -56,13 +52,22 @@ for p, name in zip(corpus.perspectives, perspectives):
 
 logger.info(str(corpus))
 
-params['outDir'] = args.out_dir
 nTopics = params.get('nTopics')
+
+# get estimates of phi_topic and phi_opinions
+s = get_sampler(params, corpus, nTopics=nTopics, initialize=False)
+s.estimate_parameters(start=params.get('sampleEstimateStart'),
+                      end=params.get('sampleEstimateEnd'))
+phi_topic = s.topics
+phi_opinion = s.opinions
+
+params['outDir'] = args.out_dir
 
 corpus.save(os.path.join(params.get('outDir'), 'corpus.json'))
 
 sampler = get_sampler(params, corpus, nTopics=nTopics, initialize=False)
-result = sampler.opinion_word_perplexity_per_document(phi_topic)
+result = sampler.opinion_word_perplexity_per_document(phi_topic=phi_topic,
+                                                      phi_opinion=phi_opinion)
 result.to_csv(os.path.join(params['outDir'],
                            'opinion_word_perplexity_{}.csv'.format(nTopics)),
               encoding='utf8')
