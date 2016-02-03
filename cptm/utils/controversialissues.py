@@ -51,8 +51,8 @@ def contrastive_opinions(query, topics, opinions, nks):
 
     Returns:
         pandas DataFrame
-            The index of the DataFrame contains the opinion words and the columns
-            represent the perspectives.
+            The index of the DataFrame contains the opinion words and the
+            columns represent the perspectives.
     """
     # TODO: fix case when word not in topicDictionary
     logger.debug('calculating contrastive opinions')
