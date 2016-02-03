@@ -23,18 +23,18 @@ from cptm.utils.controversialissues import contrastive_opinions, \
     jsd_opinions, filter_opinions
 
 
-def do_kendallt(list1, list2):
+def do_kendallt(list1, list2, alpha=0.05):
     c, p = kendalltau(list1, list2)
 
-    if p < 0.05:
+    if p < alpha:
         return c
     return 'n.s.'
 
 
-def do_spearmanr(list1, list2):
+def do_spearmanr(list1, list2, alpha=0.05):
     c, p = spearmanr(list1, list2)
 
-    if p < 0.05:
+    if p < alpha:
         return c
     return 'n.s.'
 
@@ -76,9 +76,7 @@ if __name__ == '__main__':
     logger.debug('perspectives found: {}'.format(' - '.join(parties)))
 
     lrgen = ches_data.groupby('party').mean()['lrgen'].copy().loc[parties].sort_values()
-    lrgen_r = ches_data.groupby('party').mean()['lrgen'].copy().loc[parties].sort_values(ascending=False)
     lrecon = ches_data.groupby('party').mean()['lrecon'].copy().loc[parties].sort_values()
-    lrecon_r = ches_data.groupby('party').mean()['lrecon'].copy().loc[parties].sort_values(ascending=False)
 
     n_pca_components = 10
 
