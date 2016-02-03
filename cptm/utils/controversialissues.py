@@ -51,7 +51,7 @@ def contrastive_opinions(query, topics, opinions, nks):
 
     Returns:
         pandas DataFrame
-            The index of the DataFrame contains the topic words and the columns
+            The index of the DataFrame contains the opinion words and the columns
             represent the perspectives.
     """
     # TODO: fix case when word not in topicDictionary
@@ -179,12 +179,13 @@ def perspective_jsd_matrix(opinions, nTopics):
     return perspective_jsd_matrix
 
 
-def average_pairwise_jsd(jsd, opinions, perspectives):
+def average_pairwise_jsd(jsd, opinions, perspectives=None):
     """Calculate average pairwise jsd for a list of perspectives
 
     Parameters
         jsd : numpy ndarray
             perspective jsd matrix (see perspective_jsd_matrix())
+        opinions : dictionary of opinions (pandas DataFrames)
         perspectives : list of perspective's names
             list of perspectives to calculate the average pairwise jsd for
 
@@ -192,6 +193,9 @@ def average_pairwise_jsd(jsd, opinions, perspectives):
         numpy array
             numpy array containing average pairwise jsd for each topic
     """
+    if perspectives is None:
+        perspectives = opinions.keys()
+
     nTopics = jsd.shape[0]
     ps = opinions.keys()
 
