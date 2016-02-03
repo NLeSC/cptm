@@ -5,8 +5,6 @@ import logging
 from itertools import combinations
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(format='%(time)s : %(levelname)s : %(message)s',
-                    level=logging.INFO)
 
 
 def filter_opinions(perspectives, opinions):

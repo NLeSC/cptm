@@ -5,7 +5,6 @@ import sys
 import signal
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(format='%(levelname)s : %(message)s', level=logging.INFO)
 
 
 def get_frogclient(port=8020):
