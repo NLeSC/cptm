@@ -39,7 +39,7 @@ for i, text in enumerate(input_data[args.text_field]):
         logger.info('Processing text {} of {}'.format(i + 1,
                     len(input_data[args.text_field])))
     if pd.notnull(text):
-        for pos, lemma in pos_and_lemmas():
+        for pos, lemma in pos_and_lemmas(text, frogclient):
             if pos in word_types():
                 p.add(pos, remove_trailing_digits(lemma))
         try:
