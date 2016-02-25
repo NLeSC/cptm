@@ -12,6 +12,7 @@ import pandas as pd
 import logging
 import sys
 import argparse
+import numpy as np
 
 from cptm.utils.inputgeneration import Perspective, remove_trailing_digits
 from cptm.utils.dutchdata import pos_topic_words, pos_opinion_words, word_types
@@ -28,6 +29,8 @@ args = parser.parse_args()
 
 frogclient = get_frogclient()
 
+number_of_words = []
+
 if args.in_file.endswith('.xls') or args.in_file.endswith('.xlsx'):
     input_data = pd.read_excel(args.in_file)
 else:
@@ -39,7 +42,9 @@ for i, text in enumerate(input_data[args.text_field]):
         logger.info('Processing text {} of {}'.format(i + 1,
                     len(input_data[args.text_field])))
     if pd.notnull(text):
+        n = 0
         for pos, lemma in pos_and_lemmas(text, frogclient):
+            n += 1
             if pos in word_types():
                 p.add(pos, remove_trailing_digits(lemma))
         try:
@@ -47,3 +52,7 @@ for i, text in enumerate(input_data[args.text_field]):
         except:
             file_name = '{}.txt'.format(i)
         p.write2file(args.out_dir, file_name)
+        number_of_words.append(n)
+
+print 'mean number of words:', np.mean(number_of_words)
+print 'std number of words:', np.std(number_of_words)
