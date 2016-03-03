@@ -1,11 +1,25 @@
 cimport cython
 
+import cPickle as pickle
+
 cimport numpy as np
 import numpy as np
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
 def gibbs_inner(self):
+    # np.savez('z', self.z)
+    # np.savez('ndk', self.ndk)
+    # np.savez('nkw', self.nkw)
+    # np.savez('nk', self.nk)
+    # np.savez('x', self.x)
+    # np.savez('ns', self.ns)
+    # np.savez('nrs', self.nrs)
+    # np.savez('ntd', self.ntd)
+    # pickle.dump(self, open('dinges', 'w'))
+    # print("ingemaakt")
+    # return
+    # return
     cdef np.ndarray[long, ndim=2, mode='c'] z = self.z
     cdef np.ndarray[long, ndim=2, mode='c'] ndk = self.ndk
     cdef np.ndarray[long, ndim=2, mode='c'] nkw = self.nkw
@@ -30,7 +44,7 @@ def gibbs_inner(self):
             nkw[topic, w_id] -= 1
             nk[topic] -= 1
 
-            p = p_z(ndk[d], nkw[:, w_id], nk, alpha, beta, VT, p)
+            p_z_3(ndk, d, nkw, w_id, nk, alpha, beta, VT, p)
             topic = self.sample_from(p)
 
             z[d, i] = topic
@@ -44,7 +58,8 @@ def gibbs_inner(self):
             nrs[persp, opinion, w_id] -= 1
             ns[persp, opinion] -= 1
 
-            p = p_x(nrs[persp, :, w_id], ns[persp], ndk[d], ntd[d], beta_o, VO, p)
+            # p_x(nrs[persp, :, w_id], ns[persp], ndk[d], ntd[d], beta_o, VO, p)
+            p_x_3(nrs, persp, w_id, ns, ndk, ntd[d], d, beta_o, VO, p)
             opinion = self.sample_from(p)
 
             x[persp, d_p, i] = opinion
@@ -55,7 +70,7 @@ def gibbs_inner(self):
 @cython.boundscheck(False)
 @cython.cdivision(True)
 @cython.wraparound(False)
-cpdef p_z(np.ndarray[long, ndim=1, mode='c'] ndk_d,
+cpdef void p_z(np.ndarray[long, ndim=1, mode='c'] ndk_d,
          np.ndarray[long, ndim=1] nkw_w_id,
          np.ndarray[long, ndim=1, mode='c'] nk,
          double alpha, double beta, long VT,
@@ -85,12 +100,12 @@ cpdef p_z(np.ndarray[long, ndim=1, mode='c'] ndk_d,
     for i in range(p.shape[0]):
         p[i] /= total
 
-    return p
+    # return p
 
 @cython.boundscheck(False)
 @cython.cdivision(True)
 @cython.wraparound(False)
-cpdef p_z_2(np.ndarray[long, ndim=1, mode='c'] ndk_d,
+cpdef void p_z_2(np.ndarray[long, ndim=1, mode='c'] ndk_d,
             np.ndarray[long, ndim=1] nkw_w_id,
             np.ndarray[long, ndim=1, mode='c'] nk,
             double alpha, double beta, long VT,
@@ -112,13 +127,39 @@ cpdef p_z_2(np.ndarray[long, ndim=1, mode='c'] ndk_d,
     for i in range(p.shape[0]):
         p[i] /= total
 
-    return p
+
+@cython.boundscheck(False)
+@cython.cdivision(True)
+@cython.wraparound(False)
+cpdef void p_z_3(np.ndarray[long, ndim=2, mode='c'] ndk,
+                 Py_ssize_t d,
+            np.ndarray[long, ndim=2] nkw,
+            Py_ssize_t w_id,
+            np.ndarray[long, ndim=1, mode='c'] nk,
+            double alpha, double beta, long VT,
+            np.ndarray[double, ndim=1, mode='c'] p):
+    """Calculate (normalized) probabilities for p(w|z) (topics).
+
+    The probabilities are normalized, because that makes it easier to
+    sample from them.
+    """
+    #cdef np.ndarray[double, ndim=1, mode='c'] p
+    
+    # f1 = (ndk_d+alpha) / (np.sum(ndk_d) + nTopics*alpha)
+    #p = np.empty(ndk_d.shape[0], dtype=np.double)
+    cdef double total = 0
+    for i in range(p.shape[0]):
+        p[i] = (ndk[d, i] + alpha) * (nkw[i, w_id] + beta) / (nk[i] + beta * VT)
+        total += p[i]
+    # p = (f1*f2) / np.sum(f1*f2)
+    for i in range(p.shape[0]):
+        p[i] /= total
 
 
 @cython.boundscheck(False)
 @cython.cdivision(True)
 @cython.wraparound(False)
-cpdef p_x(np.ndarray[long, ndim=1] nrs_d_wid,
+cpdef void p_x(np.ndarray[long, ndim=1] nrs_d_wid,
           np.ndarray[long, ndim=1, mode='c'] ns_persp,
           np.ndarray[long, ndim=1, mode='c'] ndk_d,
           double ntd_d, double beta, long VO,
@@ -149,4 +190,40 @@ cpdef p_x(np.ndarray[long, ndim=1] nrs_d_wid,
     for i in range(p.shape[0]):
         p[i] /= total
 
-    return p
+
+@cython.boundscheck(False)
+@cython.cdivision(True)
+@cython.wraparound(False)
+cpdef void p_x_3(np.ndarray[long, ndim=3] nrs,
+               Py_ssize_t persp,
+               Py_ssize_t w_id,
+              np.ndarray[long, ndim=2, mode='c'] ns,
+              np.ndarray[long, ndim=2, mode='c'] ndk,
+              double ntd_d,
+              Py_ssize_t d, double beta, long VO,
+              np.ndarray[double, ndim=1, mode='c'] p):
+    """Calculate (normalized) probabilities for p(w|x) (opinions).
+
+    The probabilities are normalized, because that makes it easier to
+    sample from them.
+    """
+    #cdef np.ndarray[double, ndim=1, mode='c'] p
+    #p = np.empty(ndk_d.shape[0], dtype=np.double)
+
+    # f1 = (nrs_d_wid+beta) / (ns_persp+beta*VO)
+    # f2 = ndk_d/ntd_d
+    # The paper says f2 = nsd (the number of times topic s occurs in
+    # document d) / Ntd (the number of topic words in document d).
+    # 's' is used to refer to opinions. However, f2 makes more sense as the
+    # fraction of topic words assigned to a topic.
+    # Also in test runs of the Gibbs sampler, the topics and opinions might
+    # have different indexes when the number of opinion words per document
+    # is used instead of the number of topic words.
+    # p = (f1*f2) / np.sum(f1*f2)
+    cdef double total = 0
+    for i in range(p.shape[0]):
+        p[i] = (nrs[persp, i, w_id] + beta) / (ns[persp, i] + beta * VO) * (ndk[d, i]/ntd_d)
+        total += p[i]
+
+    for i in range(p.shape[0]):
+        p[i] /= total
