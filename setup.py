@@ -2,7 +2,7 @@ from setuptools import setup, Extension
 from Cython.Distutils import build_ext
 import numpy as np
 
-gibbs_inner = Extension('gibbs_inner',
+gibbs_inner = Extension('cptm.gibbs_inner',
                         sources=['cptm/gibbs_inner.pyx'])
 
 setup(name='cptm',
