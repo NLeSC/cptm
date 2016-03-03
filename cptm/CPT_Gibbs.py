@@ -19,7 +19,7 @@ import time
 import pandas as pd
 import os
 
-from gibbs_inner import gibbs_inner
+from cptm.gibbs_inner import gibbs_inner
 
 
 logger = logging.getLogger(__name__)
