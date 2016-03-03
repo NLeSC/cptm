@@ -1,7 +1,7 @@
 import numpy as np
 from numpy import random, zeros
 from numpy.testing import assert_array_almost_equal
-from cptm.gibbs_inner import p_z, p_x, p_z_old, p_x_old
+from gibbs_inner import p_z, p_x, p_z_old, p_x_old
 
 
 def setup():
