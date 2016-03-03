@@ -31,7 +31,7 @@ def gibbs_inner(self):
             nk[topic] -= 1
 
             p = p_z(ndk[d], nkw[:, w_id], nk, alpha, beta, VT, p)
-            topic = self.sample_from(p)
+            topic = sample_from(p)
 
             z[d, i] = topic
             ndk[d, topic] += 1
@@ -45,11 +45,25 @@ def gibbs_inner(self):
             ns[persp, opinion] -= 1
 
             p = p_x(nrs[persp, :, w_id], ns[persp], ndk[d], ntd[d], beta_o, VO, p)
-            opinion = self.sample_from(p)
+            opinion = sample_from(p)
 
             x[persp, d_p, i] = opinion
             nrs[persp, opinion, w_id] += 1
             ns[persp, opinion] += 1
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+cdef Py_ssize_t sample_from(np.ndarray[double, ndim=1, mode='c'] p):
+    cdef double thresh = np.random.rand()
+    cdef double cumsum = 0.
+    cdef Py_ssize_t i
+
+    for i in range(p.shape[0]):
+        cumsum += p[i]
+        if cumsum > thresh:
+            return i
+    return p.shape[0] - 1
 
 
 @cython.boundscheck(False)
