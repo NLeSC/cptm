@@ -1,7 +1,5 @@
 cimport cython
 
-import cPickle as pickle
-
 cimport numpy as np
 import numpy as np
 
@@ -101,7 +99,6 @@ cpdef void p_z(np.ndarray[long, ndim=1, mode='c'] ndk_d,
     for i in range(p.shape[0]):
         p[i] /= total
 
-    # return p
 
 @cython.boundscheck(False)
 @cython.cdivision(True)
