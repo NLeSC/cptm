@@ -87,6 +87,33 @@ cpdef p_z(np.ndarray[long, ndim=1, mode='c'] ndk_d,
 
     return p
 
+@cython.boundscheck(False)
+@cython.cdivision(True)
+@cython.wraparound(False)
+cpdef p_z_2(np.ndarray[long, ndim=1, mode='c'] ndk_d,
+            np.ndarray[long, ndim=1] nkw_w_id,
+            np.ndarray[long, ndim=1, mode='c'] nk,
+            double alpha, double beta, long VT,
+            np.ndarray[double, ndim=1, mode='c'] p):
+    """Calculate (normalized) probabilities for p(w|z) (topics).
+
+    The probabilities are normalized, because that makes it easier to
+    sample from them.
+    """
+    #cdef np.ndarray[double, ndim=1, mode='c'] p
+    
+    # f1 = (ndk_d+alpha) / (np.sum(ndk_d) + nTopics*alpha)
+    #p = np.empty(ndk_d.shape[0], dtype=np.double)
+    cdef double total = 0
+    for i in range(p.shape[0]):
+        p[i] = (ndk_d[i] + alpha) * (nkw_w_id[i] + beta) / (nk[i] + beta * VT)
+        total += p[i]
+    # p = (f1*f2) / np.sum(f1*f2)
+    for i in range(p.shape[0]):
+        p[i] /= total
+
+    return p
+
 
 @cython.boundscheck(False)
 @cython.cdivision(True)
