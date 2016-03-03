@@ -50,23 +50,23 @@ def p_z_reference(d, w_id, alpha, beta, nTopics, VT, ndk, nkw, nk):
 
 
 def p_x_reference(persp, d, w_id, beta_o, VO, nrs, ns, ndk, ntd):
-        """Calculate (normalized) probabilities for p(w|x) (opinions).
+    """Calculate (normalized) probabilities for p(w|x) (opinions).
 
-        The probabilities are normalized, because that makes it easier to
-        sample from them.
-        """
-        f1 = (nrs[persp, :, w_id]+beta_o) / (ns[persp]+beta_o*VO)
-        # The paper says f2 = nsd (the number of times topic s occurs in
-        # document d) / Ntd (the number of topic words in document d).
-        # 's' is used to refer to opinions. However, f2 makes more sense as the
-        # fraction of topic words assigned to a topic.
-        # Also in test runs of the Gibbs sampler, the topics and opinions might
-        # have different indexes when the number of opinion words per document
-        # is used instead of the number of topic words.
-        f2 = ndk[d]/(ntd[d]+0.0)
+    The probabilities are normalized, because that makes it easier to
+    sample from them.
+    """
+    f1 = (nrs[persp, :, w_id]+beta_o) / (ns[persp]+beta_o*VO)
+    # The paper says f2 = nsd (the number of times topic s occurs in
+    # document d) / Ntd (the number of topic words in document d).
+    # 's' is used to refer to opinions. However, f2 makes more sense as the
+    # fraction of topic words assigned to a topic.
+    # Also in test runs of the Gibbs sampler, the topics and opinions might
+    # have different indexes when the number of opinion words per document
+    # is used instead of the number of topic words.
+    f2 = ndk[d]/(ntd[d]+0.0)
 
-        p = f1*f2
-        return p / np.sum(p)
+    p = f1*f2
+    return p / np.sum(p)
 
 
 def test_p_z():
