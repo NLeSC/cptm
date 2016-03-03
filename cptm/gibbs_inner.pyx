@@ -8,18 +8,6 @@ import numpy as np
 @cython.boundscheck(False)
 @cython.wraparound(False)
 def gibbs_inner(self):
-    # np.savez('z', self.z)
-    # np.savez('ndk', self.ndk)
-    # np.savez('nkw', self.nkw)
-    # np.savez('nk', self.nk)
-    # np.savez('x', self.x)
-    # np.savez('ns', self.ns)
-    # np.savez('nrs', self.nrs)
-    # np.savez('ntd', self.ntd)
-    # pickle.dump(self, open('dinges', 'w'))
-    # print("ingemaakt")
-    # return
-    # return
     cdef np.ndarray[long, ndim=2, mode='c'] z = self.z
     cdef np.ndarray[long, ndim=2, mode='c'] ndk = self.ndk
     cdef np.ndarray[long, ndim=2, mode='c'] nkw = self.nkw
@@ -58,7 +46,6 @@ def gibbs_inner(self):
             nrs[persp, opinion, w_id] -= 1
             ns[persp, opinion] -= 1
 
-            # p_x(nrs[persp, :, w_id], ns[persp], ndk[d], ntd[d], beta_o, VO, p)
             p_x_3(nrs, persp, w_id, ns, ndk, ntd[d], d, beta_o, VO, p)
             opinion = sample_from(p)
 
