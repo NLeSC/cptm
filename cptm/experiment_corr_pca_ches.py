@@ -51,6 +51,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('json', help='json file containing experiment '
                         'configuration.')
+    parser.add_argument('input', help='csv file containing ches data')
     parser.add_argument('--output', '-o', help='file to save output to')
     args = parser.parse_args()
 
@@ -69,8 +70,7 @@ if __name__ == '__main__':
 
     words = list(topics.index)
 
-    # TODO: remove harcoded path to ches_data
-    ches_data = pd.read_csv('/home/jvdzwaan/data/dilipad/CHES/data/nl_ches_data.csv', index_col=0)
+    ches_data = pd.read_csv(args.input, index_col=0)
 
     parties = opinions.keys()
     logger.debug('perspectives found: {}'.format(' - '.join(parties)))
