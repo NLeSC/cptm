@@ -8,7 +8,8 @@ principal components
 3. compares the rankings to rankings based on ches data and calculates
 correlations
 
-Usage: python experiment_com_pca_ches.py experiment.json [-o /path/to/output]
+Usage: python experiment_com_pca_ches.py experiment.json ches_data.csv
+[-o /path/to/output]
 """
 import logging
 import pandas as pd

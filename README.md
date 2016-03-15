@@ -200,7 +200,7 @@ as input:
 * `experiment_corr_pca_ches.py` calculate correlations between PCA projections
 and CHES rankings:
 
-    python experiment_corr_pca_ches.py experiment.json [-o /path/to/output]
+    python experiment_corr_pca_ches.py <experiment.json> <inpt ches data> [-o /path/to/output]
 
 
 ### Other scripts
