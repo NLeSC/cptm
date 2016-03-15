@@ -203,6 +203,12 @@ and CHES rankings:
     python experiment_corr_pca_ches.py <experiment.json> <inpt ches data> [-o /path/to/output]
 
 
+* `experiment_cptcorpus_count_words.py` counts the number of topic and opinion
+words in the corpus:
+
+    python experiment_cptcorpus_count_words.py <experiment.json>
+
+
 ### Other scripts
 
 * `corpusstatistics.py`
