@@ -3,6 +3,13 @@
 The corpus is not divided in perspectives.
 
 Used to calculate theta for the CAP vragenuurtje data.
+
+Before this script can be run, a cptm corpus should be created. Use the
+tabular2cptm_input.py script to create a corpus that can be used
+as input.
+
+Usage: python experiment_theta_for_texts_perspectives.py <experiment.json>
+<input dir> <output dir>
 """
 import logging
 import argparse

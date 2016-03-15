@@ -1,5 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+"""Create input files in cptm format from manifesto project csv files.
+
+Usage: python manifestoproject2cptm_input.py <input dir> <output dir>
+"""
 import pandas as pd
 import logging
 import argparse

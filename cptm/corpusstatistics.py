@@ -1,3 +1,9 @@
+"""Prints corpus statistics
+
+Including the number of documents in the dataset.
+
+python corpusstatistics.py <path to raw data files> experiment.json
+"""
 import logging
 import argparse
 import glob

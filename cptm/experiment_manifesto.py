@@ -3,8 +3,15 @@ documents.
 
 The corpus is not divided in perspectives.
 
-Used to estimate the likihood of party manifestos given opinions for the
-different perspectives (party manifestos come from the manifesto project)
+Used to estimate the likelihood of party manifestos given opinions for the
+different perspectives (party manifestos come from the manifesto project).
+
+Before this script can be run, a cptm corpus should be created. Use the
+manifestoproject2cptm_input.py script to create a corpus that can be used
+as input.
+
+Usage: python experiment_manifesto.py <experiment.json> <input dir>
+<output dir>
 """
 import logging
 import argparse

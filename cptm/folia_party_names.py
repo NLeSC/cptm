@@ -1,3 +1,7 @@
+"""Extract names of political parties from the Folia files
+
+Usage: python folia_party_names.py <path to raw data files>
+"""
 import gzip
 from lxml import etree
 import logging
