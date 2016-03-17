@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/NLeSC/cptm.svg?branch=develop)](https://travis-ci.org/NLeSC/cptm.svg?branch=develop)
+[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.47756.svg)](http://dx.doi.org/10.5281/zenodo.47756) [![Build Status](https://travis-ci.org/NLeSC/cptm.svg?branch=develop)](https://travis-ci.org/NLeSC/cptm.svg?branch=develop)
 
 # Cross-Perspective Topic Modeling
 
